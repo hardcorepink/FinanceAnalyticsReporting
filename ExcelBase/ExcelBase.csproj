@@ -43,7 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Worksheet.cs" />
+    <Compile Include="BaseExcelApplication.cs" />
+    <Compile Include="BaseExcelReferenceEx.cs" />
+    <Compile Include="BaseExcelWorkbook.cs" />
+    <Compile Include="BaseNamedRange.cs" />
+    <Compile Include="BaseWorksheet.cs" />
+    <Compile Include="BaseWorksheetWithSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

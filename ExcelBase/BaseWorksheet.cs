@@ -7,7 +7,7 @@ using ExcelDna.Integration;
 
 namespace ExcelBase
 {
-    public class Worksheet
+    public class BaseWorksheet
 
         {
 
@@ -24,14 +24,14 @@ namespace ExcelBase
 
             //constructor requires a system.intptr to hold reference to the worksheet.
             //i.e. worksheet name etc. will change
-            public Worksheet(System.IntPtr worksheetIntPtr)
+            public BaseWorksheet(System.IntPtr worksheetIntPtr)
             {
                 System.Diagnostics.Debug.WriteLine("Worksheet Base ptr ctor called!");
                 this.WorkSheetPtr = worksheetIntPtr;
             }
 
             //assumes that the new worksheet is the active sheet
-            public Worksheet()
+            public BaseWorksheet()
             {
 
                 System.Diagnostics.Debug.WriteLine("Worksheet Base default ctor called!");

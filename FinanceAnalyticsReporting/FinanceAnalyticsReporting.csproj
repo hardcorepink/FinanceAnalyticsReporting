@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="AddInStartupShutdown.cs" />
+    <Compile Include="TestingClassObsolete.cs" />
     <Compile Include="UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
       <SubType>Code</SubType>
