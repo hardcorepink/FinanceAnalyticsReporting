@@ -32,7 +32,7 @@ namespace FinanceAnalyticsReporting
         public static void WorksheetChanged()
         {
 
-            System.Windows.MessageBox.Show("Hello Git is working");
+            System.Windows.MessageBox.Show("First git test from desktop");
             //build a new worksheet based on our ExcelBase Assembly
             ExcelBase.BaseWorksheet activeSheet = new BaseWorksheet();
             string worksheetName = activeSheet.WorksheetName;
