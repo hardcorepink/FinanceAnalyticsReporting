@@ -1,6 +1,6 @@
-<DnaLibrary Name="FinanceAnalyticsReporting Add-In" RuntimeVersion="v4.0">
-  <ExternalLibrary Path="FinanceAnalyticsReporting.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" />
-  <Reference Path="ExcelBase.dll" Pack="true" />
+<DnaLibrary Name="ExcelBase Add-In" RuntimeVersion="v4.0">
+  <ExternalLibrary Path="ExcelBase.dll" ExplicitExports="false" LoadFromBytes="true" Pack="true" />
+  
   <!-- 
        The RuntimeVersion attribute above allows two settings:
        * RuntimeVersion="v2.0" - for .NET 2.0, 3.0 and 3.5

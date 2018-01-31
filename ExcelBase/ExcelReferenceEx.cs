@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExcelBase
 {
-    class BaseExcelApplication
+    public static class ExcelReferenceEx
     {
     }
 }

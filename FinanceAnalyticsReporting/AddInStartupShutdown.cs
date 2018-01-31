@@ -13,9 +13,8 @@ namespace FinanceAnalyticsReporting
 
         public void AutoOpen()
         {
-
             //register our event on worksheet change
-            XlCall.Excel(XlCall.xlcOnSheet, null, "WorksheetChanged");
+            XlCall.Excel(XlCall.xlcOnSheet, null, "WorksheetSelectionChanged");
         }
 
         public void AutoClose()
@@ -23,20 +22,23 @@ namespace FinanceAnalyticsReporting
 
         }
 
-
     }
 
     public static class EventCallbacks
     {
         [ExcelCommand()]
-        public static void WorksheetChanged()
+        public static void WorksheetSelectionChanged()
         {
 
-            System.Windows.MessageBox.Show("First git test from desktop");
+            
             //build a new worksheet based on our ExcelBase Assembly
-            ExcelBase.BaseWorksheet activeSheet = new BaseWorksheet();
+            ExcelBase.Worksheet activeSheet = new Worksheet();
+            
             string worksheetName = activeSheet.WorksheetName;
-            System.Windows.MessageBox.Show($"Worksheet Name is : {worksheetName}");
+
+            XlCall.Excel(XlCall.xlcMessage, true, string.Format("ExcelDNA loaded active sheet is {0}", worksheetName));
+
+            //System.Windows.MessageBox.Show($"Worksheet Name is : {worksheetName}");
 
 
 

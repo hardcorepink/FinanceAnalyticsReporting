@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExcelBase
 {
-    class BaseExcelWorkbook
+    class Application
     {
     }
 }

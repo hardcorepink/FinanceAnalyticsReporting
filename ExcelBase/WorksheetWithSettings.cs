@@ -7,7 +7,7 @@ using ExcelDna.Integration;
 
 namespace ExcelBase
 {
-    public abstract class BaseWorksheetWithSettings : BaseWorksheet
+    public abstract class WorksheetWithSettings : Worksheet
     {
         public abstract void SaveClassSettings();
 
@@ -18,10 +18,10 @@ namespace ExcelBase
 
         //TODO have a property here for name of range to look for for settings anchor
         protected List<SettingItem> settingsList;
-        private BaseWorksheet.DirectionType _settingFlowDirection;
+        private ExcelEnums.DirectionType _settingFlowDirection;
 
         //constructor - remember default worksheetBase constructor will be called
-        public BaseWorksheetWithSettings(BaseWorksheet.DirectionType settingsFlowDirection = BaseWorksheet.DirectionType.Down)
+        public WorksheetWithSettings(ExcelEnums.DirectionType settingsFlowDirection = ExcelEnums.DirectionType.Down)
         {
             System.Diagnostics.Debug.WriteLine("Data worksheet settings base ctor called");
             this._settingFlowDirection = settingsFlowDirection;
@@ -49,8 +49,8 @@ namespace ExcelBase
 
                 switch (this._settingFlowDirection)
                 {
-                    case DirectionType.Down:
-                    case BaseWorksheet.DirectionType.Up:
+                    case ExcelEnums.DirectionType.Down:
+                    case ExcelEnums.DirectionType.Up:
                         //reference needs to be 4 columns wide 
                         if (fullSettingsBlock.ColumnLast - fullSettingsBlock.ColumnFirst != 3)
                         {
@@ -59,8 +59,8 @@ namespace ExcelBase
                         };
                         break;
 
-                    case BaseWorksheet.DirectionType.ToLeft:
-                    case BaseWorksheet.DirectionType.ToRight:
+                    case ExcelEnums.DirectionType.ToLeft:
+                    case ExcelEnums.DirectionType.ToRight:
                         if (fullSettingsBlock.RowLast - fullSettingsBlock.RowFirst != 3)
                         {
                             resizedSettingsBlock = new ExcelReference
