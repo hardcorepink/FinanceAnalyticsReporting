@@ -11,31 +11,29 @@ namespace ExcelBase
 
     {
 
-        
-
         /*Constructors - includes two overloaded constructors. One that takes a worksheet IntPtr, 
         another that is default constructor which creates a worksheet from the activesheet. */
         #region Constructors
 
         //constructor requires a system.intptr to hold reference to the worksheet.
         //i.e. worksheet name etc. will change
-        public Worksheet(System.IntPtr worksheetIntPtr)
-        {
-            System.Diagnostics.Debug.WriteLine("Worksheet Base ptr ctor called!");
-            this.WorkSheetPtr = worksheetIntPtr;
-        }
+        public Worksheet(System.IntPtr worksheetIntPtr) => this._workSheetPtr = worksheetIntPtr;
 
         //assumes that the new worksheet is the active sheet
+         
         public Worksheet()
         {
+            //we only care about worksheet types here. If we get an exception then we are not pointing to a worksheet
 
-            System.Diagnostics.Debug.WriteLine("Worksheet Base default ctor called!");
-            var sheetID = XlCall.Excel(XlCall.xlSheetId);
-            ExcelReference newExcelRef = (ExcelReference)sheetID;
-            System.IntPtr newIntPtr = newExcelRef.SheetId;
-            this.WorkSheetPtr = newIntPtr;
-
-            //TODO clean this up so refers to other constructor
+            try
+            {
+                object test = XlCall.Excel(XlCall.xlSheetId);
+                this._workSheetPtr = ((ExcelReference)XlCall.Excel(XlCall.xlSheetId)).SheetId;
+            }
+            catch(Exception Ex)
+            {
+                throw new Exception("Could not create worksheet. Active Sheet is now worksheet type");
+            }
 
         }
 
@@ -43,58 +41,92 @@ namespace ExcelBase
 
         #region fields
 
-        private string _worksheetName;
         private System.IntPtr _workSheetPtr;
-        private Workbook _workbook;
 
         #endregion fields
 
         //PROPERTIES ----------------------------------------------------------
 
-        //save the worksheetPtr from the worksheet
+        //be careful as a sheetptr is not persistant, it may change if the sheet is moved...
+        public System.IntPtr WorkSheetPtr { get => _workSheetPtr; }
 
-        public System.IntPtr WorkSheetPtr
-        {
-            get { return _workSheetPtr; }
-            set { _workSheetPtr = value; }
-        }
-
-
-        public string WorksheetName
+        public string WorkbookName
         {
             get
             {
-                ExcelReference newExcelRef = new ExcelReference(0, 0, 0, 0, this.WorkSheetPtr);
-                _worksheetName = (string)XlCall.Excel(XlCall.xlSheetNm, newExcelRef);
-                return _worksheetName;
+                //get worksheetFullName
+                string worksheetFullName = this.FullWorksheetName;
+
+                //clean the string to remove Book name e.g. [Book1]Sheet1 becomes Sheet1
+                int index = worksheetFullName.IndexOf("]");
+
+                if (index > 0)
+                    return worksheetFullName.Substring(1, worksheetFullName.Length - (worksheetFullName.Length - index) - 1);
+                else
+                    return worksheetFullName;
+            }
+        }
+
+        public string ShortWorksheetName
+        {
+            get
+            {
+                string worksheetFullName = this.FullWorksheetName;
+
+                //clean the string to remove Book name e.g. [Book1]Sheet1 becomes Sheet1
+                int index = worksheetFullName.IndexOf("]");
+
+                if (index > 0)
+                    return worksheetFullName.Substring(index + 1, worksheetFullName.Length - index - 1);
+                else
+                    return worksheetFullName;
             }
             set
             {
                 //TODO - validate the worksheet name of value coming in 
                 //e.g can't name same as another worksheet, illegal characters etc.
 
-
-                //first validate that value is valid.
-                _worksheetName = value;
+                //first validate that value is valid.                
             }
         }
 
-        public string SheetRef
+        public string FullWorksheetName
         {
-            get =>  string.Format("[{0}]{1}", _workbook.Name, _worksheetName); 
+            get
+            {
+                //get an excel reference to pass to sheetNm Formula
+                ExcelReference newExcelRef = new ExcelReference(0, 0, 0, 0, this.WorkSheetPtr);
+
+                //get the full name of the worksheet
+                return (string)XlCall.Excel(XlCall.xlSheetNm, newExcelRef);
+            }
+        }
+
+        public Workbook ParentWorkbook
+        {
+            get
+            {
+                //first get the workbook name
+                string workbookName = this.WorkbookName;
+
+                Workbook newWB = new Workbook(workbookName, true);
+
+                return newWB;
+                //then get the list of 
+
+            }
         }
 
         //METHODS ----------------------------------------------------------
         public ExcelReference ReturnNamedRangeRef(string NamedRange)
         {
-            string searchNamedRange = string.Format("'{0}'!{1}", this.WorksheetName, NamedRange);
+            string searchNamedRange = string.Format("'{0}'!{1}", this.ShortWorksheetName, NamedRange);
             object value = XlCall.Excel(XlCall.xlfEvaluate, searchNamedRange);
 
             if (value is ExcelReference)
             { return (ExcelReference)value; }
             else
             { return null; }
-
         }
 
         //overloaded function can take either a named range (as as string or an excel reference)
@@ -103,9 +135,7 @@ namespace ExcelBase
         {
             ExcelReference namedExcelRef = this.ReturnNamedRangeRef(WorksheetNamedRange);
             return AnchorCellToEmptySpace(namedExcelRef, directionToLookFor);
-
         }
-
 
         public ExcelReference AnchorCellToEmptySpace(ExcelReference anchorExcelRef, ExcelEnums.DirectionType directionLookFor)
         {
@@ -148,6 +178,21 @@ namespace ExcelBase
             }
 
             return end;
+
+        }
+
+        public bool IsPointerStillValid()
+        {
+            try
+            {
+
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
 
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExcelDna.Integration;
 using ExcelBase;
+using System.Diagnostics;
 
 namespace FinanceAnalyticsReporting
 {
@@ -29,18 +30,31 @@ namespace FinanceAnalyticsReporting
         [ExcelCommand()]
         public static void WorksheetSelectionChanged()
         {
-
-            
+            ExcelBase.Worksheet testWS;
             //build a new worksheet based on our ExcelBase Assembly
-            ExcelBase.Worksheet activeSheet = new Worksheet();
-            
-            string worksheetName = activeSheet.WorksheetName;
+            try
+            {
+                testWS = new Worksheet();
+            }
+            catch
+            {
+                XlCall.Excel(XlCall.xlcMessage, true, string.Format("New selection is not a worksheet"));
+                return;
+            }
+
+
+            //output some statistics on the selected worksheet
+            Debug.WriteLine("Short Worksheet Name : " + testWS.ShortWorksheetName.ToString());
+            Debug.WriteLine("Workseet Ptr : " + testWS.WorkSheetPtr);
+            Debug.WriteLine("Workbook Name : " + testWS.WorkbookName);
+            Debug.WriteLine("Full WS Name: " + testWS.FullWorksheetName);
+            Debug.WriteLine("WB Details (Name): " + testWS.ParentWorkbook.Name);
+
+            string worksheetName = testWS.ShortWorksheetName;
 
             XlCall.Excel(XlCall.xlcMessage, true, string.Format("ExcelDNA loaded active sheet is {0}", worksheetName));
 
             //System.Windows.MessageBox.Show($"Worksheet Name is : {worksheetName}");
-
-
 
         }
     }

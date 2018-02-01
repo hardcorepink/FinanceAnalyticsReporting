@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExcelDna.Integration;
-using System.ComponentModel;
 
 namespace ExcelBase
 {
@@ -16,7 +12,6 @@ namespace ExcelBase
         private string _fileName;
 
         #endregion fields
-
 
         #region constructors
         /// <summary>
@@ -38,18 +33,14 @@ namespace ExcelBase
         }
 
         /// <summary>
-        /// Creates a new workbook and returns constructed workbook.
-        /// Throws an error and does not construct if cannot create.
+        /// Creates a new workbook if passed true and returns constructed workbook.
+        /// If passed false will return current active workbook. Throws an error and does not construct if cannot create.
         /// </summary>
         public Workbook(Boolean newWorkbook)
         {
             try
             {
-                if (newWorkbook)
-                {
-                    XlCall.Excel(XlCall.xlcNew, 5);
-                }
-
+                if (newWorkbook) { XlCall.Excel(XlCall.xlcNew, 5); }
                 this._fileName = (string)XlCall.Excel(XlCall.xlfGetDocument, 88);
             }
 
@@ -57,7 +48,38 @@ namespace ExcelBase
             //this is a new workbook so we do not have a file path 
         }
 
+        /// <summary>
+        /// Only use this constructor if have workbook name, and are sure that the workbook is currently open in Excel
+        /// </summary>
+        /// <param name="WorkbookName"></param>
+        /// <param name="confirmAlreadyOpened"></param>
+        public Workbook(string WorkbookName, Boolean confirmAlreadyOpened)
+        {
+            try
+            {
+                List<string> listWorkbooks = ExcelBase.Application.ListWorkbookNames();
+                if (listWorkbooks.Exists(x => x == WorkbookName))
+                {
+                    //if there is an error here there is no path Get Document returns Error if the workbook is not yet saved
+                    object fullPathTry = XlCall.Excel(XlCall.xlfGetDocument, 2, WorkbookName);
+                    if (fullPathTry is ExcelDna.Integration.ExcelError)
+                    {
+                        this._fileName = WorkbookName;
+                    }
+                    else
+                    {
+                        this._fileName = WorkbookName;
+                        this._fullPath = (string)XlCall.Excel(XlCall.xlfGetDocument, 2, WorkbookName);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Could not find workbook name as passed to workbook constructor");
+                }
+            }
 
+            catch { throw; }
+        }
         #endregion constructors
 
         /// <summary>
@@ -140,7 +162,10 @@ namespace ExcelBase
             for (int i = 0; i < numberOfWindows; i++)
             {
                 string window_text = (string)arrayOfWindows[0, i];
-                string workbookOwningWindowName = (string)XlCall.Excel(XlCall.xlfGetWindow, 1, window_text);
+
+                string workbookOwningWindowName = WorkbookNameFromSquareBrackets
+                    ((string)XlCall.Excel(XlCall.xlfGetWindow, 1, window_text));
+
                 if (workbookOwningWindowName == this.Name)
                 {
                     XlCall.Excel(XlCall.xlcActivate, window_text, Type.Missing);
@@ -148,13 +173,11 @@ namespace ExcelBase
                 }
             }
 
-            //lets first try just hiding the window by making it's size 0
-
         }
 
         public static string WorkbookNameFromSquareBrackets(string squareBracketFulName)
         {
-            
+
             int index = squareBracketFulName.IndexOf("]");
             if (index > 0)
                 squareBracketFulName = squareBracketFulName.Substring(0, index);

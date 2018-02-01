@@ -22,11 +22,10 @@ namespace ExcelBase
 
         //constructor - remember default worksheetBase constructor will be called
         public WorksheetWithSettings(ExcelEnums.DirectionType settingsFlowDirection = ExcelEnums.DirectionType.Down)
-        {
+        { 
             System.Diagnostics.Debug.WriteLine("Data worksheet settings base ctor called");
             this._settingFlowDirection = settingsFlowDirection;
             this.SaveClassSettings();
-
         }
 
         public void RecalculateSettings()

@@ -48,9 +48,9 @@ namespace ExcelBase
             get
             {
                 return (_workbook != null) ? _workbook.Name + "!" + _name :
-              _worksheet.SheetRef.Contains(" ") ?
-              string.Format("'{0}'!{1}", _worksheet.SheetRef, _name) :
-              string.Format("{0}!{1}", _worksheet.SheetRef, _name);
+              _worksheet.FullWorksheetName.Contains(" ") ?
+              string.Format("'{0}'!{1}", _worksheet.FullWorksheetName, _name) :
+              string.Format("{0}!{1}", _worksheet.FullWorksheetName, _name);
             }
         }
 

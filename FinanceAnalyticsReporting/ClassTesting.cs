@@ -47,7 +47,41 @@ namespace FinanceAnalyticsReporting
 
         }
 
+        [ExcelCommand(MenuName = "Hello", MenuText = "Create new worksheet from active sheet")]
+        public static void CreateNewWorksheetObject()
+        {
+            
+            testWS = new Worksheet();
+           // Debug.WriteLine("SheetRef: " + newWS.SheetRef.ToString());
+            Debug.WriteLine("Short Worksheet Name : " + testWS.ShortWorksheetName.ToString());
+            Debug.WriteLine("Workseet Ptr : " + testWS.WorkSheetPtr);
+            Debug.WriteLine("Workbook Name : " + testWS.WorkbookName);
+            Debug.WriteLine("Full WS Name: " + testWS.FullWorksheetName);
+        }
 
-       
+        public static ExcelBase.Worksheet testWS;
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestMovingWS")]
+        public static void TestMovingWS()
+        {
+            
+            // Debug.WriteLine("SheetRef: " + newWS.SheetRef.ToString());
+            Debug.WriteLine("Short Worksheet Name : " + testWS.ShortWorksheetName.ToString());
+            Debug.WriteLine("Workseet Ptr : " + testWS.WorkSheetPtr);
+            Debug.WriteLine("Workbook Name : " + testWS.WorkbookName);
+            Debug.WriteLine("Full WS Name: " + testWS.FullWorksheetName);
+
+            Debug.WriteLine("WB Details (Name): " + testWS.ParentWorkbook.Name);
+
+        }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestDialog")]
+        public static void TestDialog()
+        {
+
+            XlCall.Excel(XlCall.xlfInput, "Testing Reference Dialog Input");
+
+        }
+
     }
 }
