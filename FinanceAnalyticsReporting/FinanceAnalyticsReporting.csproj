@@ -51,14 +51,16 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UserControl1.xaml">
+    <Compile Include="Application\StaticAppState.cs" />
+    <Page Include="MVVM Assets\UserControl1.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AddInStartupShutdown.cs" />
-    <Compile Include="ClassTesting.cs" />
-    <Compile Include="TestingClassObsolete.cs" />
-    <Compile Include="UserControl1.xaml.cs">
+    <Compile Include="Application\AddInStartupShutdown.cs" />
+    <Compile Include="Testing\ClassTesting.cs" />
+    <Compile Include="ExcelWorksheetTypes\ActiveFormDataSheet.cs" />
+    <Compile Include="ExcelWorksheetTypes\ReportWorksheet.cs" />
+    <Compile Include="MVVM Assets\UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -81,9 +83,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="FinanceAnalyticsReporting-AddIn.dna" />
     <None Include="packages.config" />
     <None Include="Properties\ExcelDna.Build.props" />
+    <None Include="FinanceAnalyticsReporting-AddIn.dna" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -22,22 +22,12 @@ namespace ExcelBase
 
         //constructor - remember default worksheetBase constructor will be called
         public WorksheetWithSettings(ExcelEnums.DirectionType settingsFlowDirection = ExcelEnums.DirectionType.Down)
-        { 
+        {
             System.Diagnostics.Debug.WriteLine("Data worksheet settings base ctor called");
             this._settingFlowDirection = settingsFlowDirection;
             this.SaveClassSettings();
         }
-
-        public void RecalculateSettings()
-        {
-            //get the block as an excel reference
-            object settingsBlock = this.ReturnExcelRefSettingsBlock();
-            if (settingsBlock is ExcelReference sb)
-            {
-
-            }
-        }
-
+               
         private ExcelReference ReturnExcelRefSettingsBlock()
         {
             ExcelReference settingsAnchorBlock = base.ReturnNamedRangeRef("reportSettings");
@@ -51,19 +41,19 @@ namespace ExcelBase
                     case ExcelEnums.DirectionType.Down:
                     case ExcelEnums.DirectionType.Up:
                         //reference needs to be 4 columns wide 
-                        if (fullSettingsBlock.ColumnLast - fullSettingsBlock.ColumnFirst != 3)
+                        if (fullSettingsBlock.ColumnLast - fullSettingsBlock.ColumnFirst != 4)
                         {
                             resizedSettingsBlock = new ExcelReference
-                            (fullSettingsBlock.RowFirst, fullSettingsBlock.RowLast, fullSettingsBlock.ColumnFirst, fullSettingsBlock.ColumnFirst + 3, base.WorkSheetPtr);
+                            (fullSettingsBlock.RowFirst, fullSettingsBlock.RowLast, fullSettingsBlock.ColumnFirst, fullSettingsBlock.ColumnFirst + 4, base.WorkSheetPtr);
                         };
                         break;
 
                     case ExcelEnums.DirectionType.ToLeft:
                     case ExcelEnums.DirectionType.ToRight:
-                        if (fullSettingsBlock.RowLast - fullSettingsBlock.RowFirst != 3)
+                        if (fullSettingsBlock.RowLast - fullSettingsBlock.RowFirst != 4)
                         {
                             resizedSettingsBlock = new ExcelReference
-                            (fullSettingsBlock.RowFirst, fullSettingsBlock.RowFirst + 3, fullSettingsBlock.ColumnFirst, fullSettingsBlock.ColumnLast, base.WorkSheetPtr);
+                            (fullSettingsBlock.RowFirst, fullSettingsBlock.RowFirst + 4, fullSettingsBlock.ColumnFirst, fullSettingsBlock.ColumnLast, base.WorkSheetPtr);
                         };
                         break;
 
@@ -73,7 +63,9 @@ namespace ExcelBase
             else return null;
 
         }
-
+        /// <summary>
+        /// This method reads a settings from excel sheet into a List of type settingItem.
+        /// </summary>
         public void ReadSettingsToDictionary()
         {
             ExcelReference settingsBlock = this.ReturnExcelRefSettingsBlock();
@@ -93,7 +85,9 @@ namespace ExcelBase
                             objBlockValues[i, 0].ToString(),
                             objBlockValues[i, 1].ToString(),
                             objBlockValues[i, 2].ToString(),
-                            objBlockValues[i, 3].ToString()));
+                            objBlockValues[i, 3].ToString(),
+                            objBlockValues[i, 4].ToString()
+                            ));
 
                         System.Diagnostics.Debug.WriteLine(settingsList[settingsList.Count - 1].ToString());
                     }
@@ -141,7 +135,7 @@ namespace ExcelBase
             ExcelReference newSettingsBlockAwaitingInput = new ExcelReference(settingsAnchor.RowFirst, this.settingsList.Count + settingsAnchor.RowFirst - 1, settingsAnchor.ColumnFirst, settingsAnchor.ColumnFirst + 3);
 
             //setup our string array - rows first
-            string[,] stringArrayToSave = new string[settingsList.Count, 4];
+            string[,] stringArrayToSave = new string[settingsList.Count, 5];
 
             long arrayRowCounter = 0;
             foreach (SettingItem s in settingsList)
@@ -150,6 +144,7 @@ namespace ExcelBase
                 stringArrayToSave[arrayRowCounter, 1] = s.SettingName;
                 stringArrayToSave[arrayRowCounter, 2] = s.SettingValue;
                 stringArrayToSave[arrayRowCounter, 3] = s.SettingSecondaryValue;
+                stringArrayToSave[arrayRowCounter, 4] = s.SettingUISerialization;
                 arrayRowCounter++;
             }
 
@@ -164,36 +159,19 @@ namespace ExcelBase
         private string _settingType;
         private string _settingValue;
         private string _settingSecondaryValue;
+        private string _settingUISerialization;
 
         //ctor to take all setting values, types etc.
-        public SettingItem(string SettingType, string SettingName, string SettingValue, string SettingSecondaryValue)
+        public SettingItem(string SettingType, string SettingName, string SettingValue, string SettingSecondaryValue, string SettingUISerialization)
         {
-            _settingName = SettingName; _settingType = SettingType; _settingValue = SettingValue; _settingSecondaryValue = SettingSecondaryValue;
+            _settingName = SettingName; _settingType = SettingType; _settingValue = SettingValue; _settingSecondaryValue = SettingSecondaryValue; _settingUISerialization = SettingUISerialization;
         }
 
-        public string SettingName
-        {
-            get { return _settingName; }
-            set { _settingName = value; }
-        }
-
-        public string SettingType
-        {
-            get { return _settingType; }
-            set { _settingType = value; }
-        }
-
-        public string SettingValue
-        {
-            get { return _settingValue; }
-            set { _settingValue = value; }
-        }
-
-        public string SettingSecondaryValue
-        {
-            get { return _settingSecondaryValue; }
-            set { _settingSecondaryValue = value; }
-        }
+        public string SettingName { get => _settingName; set => _settingName = value; }
+        public string SettingType { get => _settingType; set => _settingType = value; }
+        public string SettingValue { get => _settingValue; set => _settingValue = value; }
+        public string SettingSecondaryValue { get => _settingSecondaryValue; set => _settingSecondaryValue = value; }
+        public string SettingUISerialization { get => _settingUISerialization; set => _settingUISerialization = value; }
 
         public override string ToString()
         {

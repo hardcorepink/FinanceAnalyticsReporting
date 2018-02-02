@@ -11,7 +11,7 @@ namespace FinanceAnalyticsReporting
 {
     public static class ClassTesting
     {
-                       
+
         [ExcelCommand(MenuName = "Hello", MenuText = "OpenWorkbook")]
         public static void OpenWorkbook()
         {
@@ -39,7 +39,7 @@ namespace FinanceAnalyticsReporting
             Workbook newWB = new Workbook(true);
         }
 
-        [ExcelCommand(MenuName = "Hello", MenuText ="Hide all windows belonging to active workbook")]
+        [ExcelCommand(MenuName = "Hello", MenuText = "Hide all windows belonging to active workbook")]
         public static void HideAllWindows()
         {
             Workbook newWB = new Workbook(false);
@@ -50,9 +50,9 @@ namespace FinanceAnalyticsReporting
         [ExcelCommand(MenuName = "Hello", MenuText = "Create new worksheet from active sheet")]
         public static void CreateNewWorksheetObject()
         {
-            
+
             testWS = new Worksheet();
-           // Debug.WriteLine("SheetRef: " + newWS.SheetRef.ToString());
+            // Debug.WriteLine("SheetRef: " + newWS.SheetRef.ToString());
             Debug.WriteLine("Short Worksheet Name : " + testWS.ShortWorksheetName.ToString());
             Debug.WriteLine("Workseet Ptr : " + testWS.WorkSheetPtr);
             Debug.WriteLine("Workbook Name : " + testWS.WorkbookName);
@@ -64,24 +64,63 @@ namespace FinanceAnalyticsReporting
         [ExcelCommand(MenuName = "Hello", MenuText = "TestMovingWS")]
         public static void TestMovingWS()
         {
-            
+
             // Debug.WriteLine("SheetRef: " + newWS.SheetRef.ToString());
             Debug.WriteLine("Short Worksheet Name : " + testWS.ShortWorksheetName.ToString());
             Debug.WriteLine("Workseet Ptr : " + testWS.WorkSheetPtr);
             Debug.WriteLine("Workbook Name : " + testWS.WorkbookName);
             Debug.WriteLine("Full WS Name: " + testWS.FullWorksheetName);
-
             Debug.WriteLine("WB Details (Name): " + testWS.ParentWorkbook.Name);
 
         }
 
-        [ExcelCommand(MenuName = "Hello", MenuText = "TestDialog")]
-        public static void TestDialog()
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetAlive")]
+        public static void TestWorksheetAlive()
         {
-
-            XlCall.Excel(XlCall.xlfInput, "Testing Reference Dialog Input");
+            System.Windows.MessageBox.Show(testWS.IsPointerStillValid().ToString());
 
         }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetIndexer")]
+        public static void TestWorksheetIndexer()
+        {
+            Workbook newWB = new Workbook(false);
+            Worksheet tryWS = newWB.Worksheets["Hello"];
+            if (tryWS != null)
+            {
+                string wsName = tryWS.ShortWorksheetName;
+                System.Windows.MessageBox.Show(tryWS.ShortWorksheetName);
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Could not find Hello sheet in active workbook");
+            }
+                
+        }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestFullWorksheetConstrcutor")]
+        public static void TestFullWorksheetConstrcutor()
+        {
+
+            var worksheetString = "[Book4]Hello";
+            var newWS = new Worksheet(worksheetString);
+                        
+        }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetIterator")]
+        public static void TestWorksheetIterator()
+        {
+
+            var activeWB = new Workbook(false);
+
+            foreach(Worksheet ws in activeWB.Worksheets)
+            {
+                System.Windows.MessageBox.Show(ws.FullWorksheetName);
+            }
+
+        }
+
+
 
     }
 }

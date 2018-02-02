@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using ExcelDna.Integration;
@@ -184,6 +185,74 @@ namespace ExcelBase
 
             return squareBracketFulName.Replace("[", "");
         }
+
+
+
+        public WorksheetsCollection Worksheets { get => new WorksheetsCollection(this.Name); }
+
+
+        public class WorksheetsCollection : IEnumerable<Worksheet>
+        {
+            private string _workbookName;
+
+            public WorksheetsCollection(string WorkbookName)
+            {
+                this._workbookName = WorkbookName;
+            }
+
+            public Worksheet this[string worksheetName]
+            {
+                get
+                {
+                    try
+                    {   //Get Workbook given 1 returns array of worksheet names in format [BookName]SheetName                     
+                        object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
+                        long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
+                        for (int i = 0; i < numberSheets; i++)
+                        {
+                            //get just the sheet name
+                            string sheetName = Worksheet.WorksheetNameFromFullReference((string)ArrayFullWorksheetNames[0, i]);
+                            //compare to what we provided
+                            if (String.Equals(worksheetName, sheetName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                try
+                                {
+                                    //construct a new worksheet type from the full worksheet name
+                                    return new Worksheet((string)ArrayFullWorksheetNames[0, i]);
+                                }
+                                catch
+                                {
+                                    return null;
+                                }
+                            }
+                        }
+
+                        return null;
+
+                    }
+                    catch { return null; }
+                    //this will loop through workbook worksheets. 
+
+                }
+            }
+
+            public IEnumerator<Worksheet> GetEnumerator()
+            {
+                object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
+                long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
+                for (int i = 0; i < numberSheets; i++)
+                {
+                    Worksheet ws = new Worksheet((string)ArrayFullWorksheetNames[0, i]);
+                    yield return ws;
+                }
+            }
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return this.GetEnumerator();
+            }
+        }
+
+
 
         #region properties
         public string Name { get => _fileName; }

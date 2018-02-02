@@ -11,16 +11,11 @@ namespace ExcelBase
 
     {
 
-        /*Constructors - includes two overloaded constructors. One that takes a worksheet IntPtr, 
-        another that is default constructor which creates a worksheet from the activesheet. */
         #region Constructors
-
-        //constructor requires a system.intptr to hold reference to the worksheet.
-        //i.e. worksheet name etc. will change
-        public Worksheet(System.IntPtr worksheetIntPtr) => this._workSheetPtr = worksheetIntPtr;
-
-        //assumes that the new worksheet is the active sheet
-         
+        
+        /// <summary>
+        /// Constructs a Worksheet from the currently active sheet.
+        /// </summary>
         public Worksheet()
         {
             //we only care about worksheet types here. If we get an exception then we are not pointing to a worksheet
@@ -28,20 +23,43 @@ namespace ExcelBase
             try
             {
                 object test = XlCall.Excel(XlCall.xlSheetId);
-                this._workSheetPtr = ((ExcelReference)XlCall.Excel(XlCall.xlSheetId)).SheetId;
+                this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId);
+                this._workSheetPtr = this._baseExcelReference.SheetId;
             }
-            catch(Exception Ex)
+            catch
             {
-                throw new Exception("Could not create worksheet. Active Sheet is now worksheet type");
+                throw new Exception("Could not create worksheet. Active Sheet is not worksheet type");
             }
 
         }
+
+        /// <summary>
+        /// Constructs a Worksheet from a full worksheet reference. For example [Book1]SheetName
+        /// </summary>
+        public Worksheet(string FullWorksheetReference)
+        {
+            try
+            {
+                this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId, FullWorksheetReference);
+                this._workSheetPtr = this._baseExcelReference.SheetId;
+            }
+            catch
+            {
+                throw new Exception($"Could not create workbook from full worksheet reference: {FullWorksheetReference}");
+            }
+
+        }
+               
 
         #endregion Constructors
 
         #region fields
 
         private System.IntPtr _workSheetPtr;
+        private ExcelDna.Integration.ExcelReference _baseExcelReference;
+
+
+
 
         #endregion fields
 
@@ -117,6 +135,7 @@ namespace ExcelBase
             }
         }
 
+
         //METHODS ----------------------------------------------------------
         public ExcelReference ReturnNamedRangeRef(string NamedRange)
         {
@@ -185,15 +204,23 @@ namespace ExcelBase
         {
             try
             {
-
+                string wsName = (string)XlCall.Excel(XlCall.xlSheetNm, this._baseExcelReference);
                 return true;
-
             }
-            catch
+            catch { return false; }
+        }
+
+        public static string WorksheetNameFromFullReference(string fullWorksheetName)
+        {
+            int index = fullWorksheetName.IndexOf("]");
+            if (index > 0)
             {
-                return false;
+                return fullWorksheetName.Substring(index + 1);
             }
-
+            else
+            {
+                return fullWorksheetName;
+            }
         }
 
     }
