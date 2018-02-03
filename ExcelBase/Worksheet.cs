@@ -29,7 +29,7 @@ namespace ExcelBase
             catch
             {
                 throw new Exception("Could not create worksheet. Active Sheet is not worksheet type");
-            }
+            }  
 
         }
 
@@ -43,15 +43,40 @@ namespace ExcelBase
                 this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId, FullWorksheetReference);
                 this._workSheetPtr = this._baseExcelReference.SheetId;
             }
-            catch
+            catch  
             {
                 throw new Exception($"Could not create workbook from full worksheet reference: {FullWorksheetReference}");
             }
 
         }
-               
+
 
         #endregion Constructors
+
+        #region AttributeClasses
+
+        [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+        public sealed class WorksheetDerivedTypeIdentifierAttribute : Attribute
+        {            
+            readonly string _a1Identifier;
+
+            // This is a positional argument
+            public WorksheetDerivedTypeIdentifierAttribute(string ClassIdentifierString)
+            {
+                this._a1Identifier = ClassIdentifierString;                
+            }
+
+            public string ClassIdentifierString
+            {
+                get { return _a1Identifier; }
+            }
+
+          
+        }
+
+
+        #endregion AttributeClasses
+
 
         #region fields
 

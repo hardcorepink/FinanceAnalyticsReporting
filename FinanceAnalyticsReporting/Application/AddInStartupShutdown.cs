@@ -16,6 +16,8 @@ namespace FinanceAnalyticsReporting.Application
         {
             //register our event on worksheet change
             XlCall.Excel(XlCall.xlcOnSheet, null, "WorksheetChangedApp");
+
+            StaticAppState.BuildDictionaryOfWorksheetTypes();
         }
 
         public void AutoClose()

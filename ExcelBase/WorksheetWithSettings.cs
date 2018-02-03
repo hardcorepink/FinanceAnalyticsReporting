@@ -20,6 +20,11 @@ namespace ExcelBase
         protected List<SettingItem> settingsList;
         private ExcelEnums.DirectionType _settingFlowDirection;
 
+        public WorksheetWithSettings() : base()
+        {
+
+        }
+
         //constructor - remember default worksheetBase constructor will be called
         public WorksheetWithSettings(ExcelEnums.DirectionType settingsFlowDirection = ExcelEnums.DirectionType.Down)
         {

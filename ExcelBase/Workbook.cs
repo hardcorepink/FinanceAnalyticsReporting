@@ -190,7 +190,6 @@ namespace ExcelBase
 
         public WorksheetsCollection Worksheets { get => new WorksheetsCollection(this.Name); }
 
-
         public class WorksheetsCollection : IEnumerable<Worksheet>
         {
             private string _workbookName;
@@ -242,8 +241,18 @@ namespace ExcelBase
                 long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
                 for (int i = 0; i < numberSheets; i++)
                 {
-                    Worksheet ws = new Worksheet((string)ArrayFullWorksheetNames[0, i]);
-                    yield return ws;
+                    //always need to try constructing a worksheet, just in case it can't work (chart sheet for excample)
+                    Worksheet WorksheetToReturn;
+                    try
+                    {
+                        WorksheetToReturn = new Worksheet((string)ArrayFullWorksheetNames[0, i]);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    yield return WorksheetToReturn;
+
                 }
             }
             IEnumerator IEnumerable.GetEnumerator()
