@@ -15,20 +15,42 @@ namespace FinanceAnalyticsReporting.Application
     public static class StaticAppState
     {
 
+        #region fields
+
         private static Dictionary<string, Type> dictionaryWSTypesFromStrings;
-        private static ExcelBase.Worksheet _currentActiveWorkSheet;
-        
+        private static Worksheet _currentActiveWorkSheet;
+
+        #endregion fields
+
+
+        #region constructor
+        //not a constructor, as we can't be sure the constructor won't be called before exceldna has
+        //loaded all of its assemblies. This Startup is called by ExcelDNA startup
+        internal static void Startup()
+        {
+            //delcare any fields and set defaults;
+            dictionaryWSTypesFromStrings = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
+            _currentActiveWorkSheet = null;
+
+            //build dictionary of types
+            BuildDictionaryOfWorksheetTypes();
+
+            //although we have registered a call to worksheet change, when we startup we also want info on the current sheet
+            WorksheetChangedApp();
+
+        }
+
+        #endregion constructor
+
         /// <summary>
         /// This is part of the startup routines. Reflects over types that derive from ExcelBase Worksheet and
         /// looks for specific identifier in cell A1 in Attributes. For example if ReportWorksheet type is in A1, then
         /// _specificWorksheetTYpe should receive an instance of RpeortWorksheet.
         /// </summary>
-        public static void BuildDictionaryOfWorksheetTypes()
+        private static void BuildDictionaryOfWorksheetTypes()
         {
-            dictionaryWSTypesFromStrings = new Dictionary<string, Type>();
-            //get the current assembly
+            //get the current assembly and all types within the assembly
             Assembly thisAssembly = Assembly.GetExecutingAssembly();
-
             Type[] ListTypesInThisAssembly = thisAssembly.GetTypes();
 
             foreach (Type t in ListTypesInThisAssembly)
@@ -45,12 +67,9 @@ namespace FinanceAnalyticsReporting.Application
             }
         }
 
-        [ExcelCommand()]
         public static void WorksheetChangedApp()
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-
-            //worksheet has changed so clear the current worksheet variables
+            //worksheet has changed so clear the current worksheet handle
             _currentActiveWorkSheet = null;
 
             try
@@ -74,13 +93,9 @@ namespace FinanceAnalyticsReporting.Application
             }
             catch
             {
-                Debug.WriteLine($"Selected sheet is not of worksheet type");
+
             }
 
-            watch.Stop();
-            var elapsedMs = watch.ElapsedMilliseconds;
-
-            Debug.WriteLine($"Done in {elapsedMs} ms");
 
         }
 
