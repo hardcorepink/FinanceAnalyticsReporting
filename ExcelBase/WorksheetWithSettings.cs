@@ -9,33 +9,33 @@ namespace ExcelBase
 {
     public abstract class WorksheetWithSettings : Worksheet
     {
-        public abstract void SaveClassSettings();
 
-        public abstract string ReportSettingsAnchor
-        {
-            get;
-        }
+        #region fields
+        //All lists of settings here. Class settings can have lists of settings, as they will not need to be 
+        protected List<SettingItem> listClassSettings;
+        protected List<SettingItem> listGenericSettings;
+        protected List<SettingItem> listCalculatedSettings;
+        protected List<SettingItem> listAllSettings;
 
-        //TODO have a property here for name of range to look for for settings anchor
-        protected List<SettingItem> settingsList;
-        private ExcelEnums.DirectionType _settingFlowDirection;
+        //this will be triggered to the derived class when there are new settings. I.e. either reloaded from the sheet or 
+        //imported from another report
+        public abstract void SettingsSavedToClass();
 
+        //setting fill direction always looks down     
+        private ExcelEnums.DirectionType _settingFlowDirection = ExcelEnums.DirectionType.Down;
+
+
+        #endregion fields
+
+        //default constuctor here - calls base constuctor to look construct worksheet from active sheet
         public WorksheetWithSettings() : base()
         {
 
         }
 
-        //constructor - remember default worksheetBase constructor will be called
-        public WorksheetWithSettings(ExcelEnums.DirectionType settingsFlowDirection = ExcelEnums.DirectionType.Down)
-        {
-            System.Diagnostics.Debug.WriteLine("Data worksheet settings base ctor called");
-            this._settingFlowDirection = settingsFlowDirection;
-            this.SaveClassSettings();
-        }
-               
         private ExcelReference ReturnExcelRefSettingsBlock()
         {
-            ExcelReference settingsAnchorBlock = base.ReturnNamedRangeRef("reportSettings");
+            ExcelReference settingsAnchorBlock = base.ReturnNamedRangeRef("settingsAnchor");
             ExcelReference resizedSettingsBlock = null;
             if (settingsAnchorBlock != null)
             {
@@ -68,54 +68,77 @@ namespace ExcelBase
             else return null;
 
         }
+
         /// <summary>
-        /// This method reads a settings from excel sheet into a List of type settingItem.
+        /// This method reads a settings from excel sheet into various lists of type settingItem.
         /// </summary>
-        public void ReadSettingsToDictionary()
+        public void ReadSettingsToList()
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
             ExcelReference settingsBlock = this.ReturnExcelRefSettingsBlock();
+
             if (settingsBlock != null)
             {
 
                 object settingsBlockValues = settingsBlock.GetValue();
                 if (settingsBlockValues is object[,] objBlockValues)
                 {
-                    long rows = objBlockValues.GetLength(0);
-                    this.settingsList = new List<SettingItem>();
+                    int rows = objBlockValues.GetLength(0);
+                    this.listAllSettings = new List<SettingItem>();
 
                     //loop through - otherwise failed
-                    for (long i = 0; i < rows; i++)
+                    for (int i = 0; i < rows; i++)
                     {
-                        this.settingsList.Add(new SettingItem(
+                        this.listAllSettings.Add(new SettingItem(
+                            new ExcelReference(
+                                settingsBlock.RowFirst + i,
+                                settingsBlock.RowFirst + i,
+                                settingsBlock.ColumnFirst,
+                                settingsBlock.ColumnLast),
+
                             objBlockValues[i, 0].ToString(),
                             objBlockValues[i, 1].ToString(),
                             objBlockValues[i, 2].ToString(),
                             objBlockValues[i, 3].ToString(),
                             objBlockValues[i, 4].ToString()
                             ));
-
-                        System.Diagnostics.Debug.WriteLine(settingsList[settingsList.Count - 1].ToString());
                     }
                 }
                 else
                 {
                     //empty List of settings if failed
-
-                    this.settingsList = new List<SettingItem>();
+                    this.listAllSettings = new List<SettingItem>();
                 }
 
-                this.SaveClassSettings();
-            }
+                //ok now we have all settings. In this base class we will do some sorting of the settings for the derived classes
+                this.listGenericSettings = new List<SettingItem>();
+                this.listGenericSettings = this.listAllSettings.Where(s =>
+                    string.Equals(s.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
-            //TODO remove this later as this is a test line
-            this.SaveIncomingSettingsToDictionary(this.settingsList);
+                this.listClassSettings = new List<SettingItem>();
+                this.listClassSettings = this.listAllSettings.Where(s =>
+                    string.Equals(s.SettingType, "classSetting", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                this.listClassSettings = new List<SettingItem>();
+                this.listClassSettings = this.listAllSettings.Where(s =>
+                    string.Equals(s.SettingType, "calcualtedSetting", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                this.SettingsSavedToClass();
+            }
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            System.Diagnostics.Debug.WriteLine($"Read settings in {elapsedMs.ToString()} ms");
         }
 
-        public virtual void SaveIncomingSettingsToDictionary(List<SettingItem> incomingSettingsDictionary)
+        public virtual void SaveIncomingSettingsToList(List<SettingItem> incomingSettingsList)
         {
-            //need to loop through all settings (except for class settings as these are not shared...
-            var genericSettingsIn = incomingSettingsDictionary.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase));
-            var thisGenericSettings = this.settingsList.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase));
+            //filter out the settings, as settings in will make availabe genericSettings and calculatedSettings, but this class will only overwrite instances of genericsettings
+            var genericSettingsIn = incomingSettingsList.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(x.SettingType, "calculatedSetting", StringComparison.OrdinalIgnoreCase));
+
+            var thisGenericSettings = this.listAllSettings.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase));
 
             foreach (SettingItem inSetting in genericSettingsIn)
             {
@@ -130,30 +153,23 @@ namespace ExcelBase
             }
         }
 
-        public virtual void CommitDictionarySettingsToSheet()
+        public virtual void CommitAllSettingsToSheet()
         {
-            //get the ExcelReference for the settingsAnchor
-            ExcelReference settingsAnchor = base.ReturnNamedRangeRef("reportSettings");
 
-            //resize the reference to fit the size of our settings list and for the number of columns required
-            //TODO add switch for different settings directions
-            ExcelReference newSettingsBlockAwaitingInput = new ExcelReference(settingsAnchor.RowFirst, this.settingsList.Count + settingsAnchor.RowFirst - 1, settingsAnchor.ColumnFirst, settingsAnchor.ColumnFirst + 3);
+            Application.TurnScreenUpdatingOff();
 
-            //setup our string array - rows first
-            string[,] stringArrayToSave = new string[settingsList.Count, 5];
+            var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            long arrayRowCounter = 0;
-            foreach (SettingItem s in settingsList)
-            {
-                stringArrayToSave[arrayRowCounter, 0] = s.SettingType;
-                stringArrayToSave[arrayRowCounter, 1] = s.SettingName;
-                stringArrayToSave[arrayRowCounter, 2] = s.SettingValue;
-                stringArrayToSave[arrayRowCounter, 3] = s.SettingSecondaryValue;
-                stringArrayToSave[arrayRowCounter, 4] = s.SettingUISerialization;
-                arrayRowCounter++;
-            }
+            List<SettingItem> commitList = this.listAllSettings.Where(s => (string.Equals(s.SettingType, "calculatedSetting", StringComparison.OrdinalIgnoreCase) == false)).ToList();
 
-            newSettingsBlockAwaitingInput.SetValue(stringArrayToSave);
+            commitList.ForEach(s => s.SaveSettingToSheet());
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+
+            System.Diagnostics.Debug.WriteLine($"Commit settings in {elapsedMs.ToString()} ms");
+
+            Application.TurnScreenUpdatingOn();
 
         }
     }
@@ -166,14 +182,18 @@ namespace ExcelBase
         private string _settingSecondaryValue;
         private string _settingUISerialization;
 
+        private ExcelReference _settingExcelReference;
+
+
         //ctor to take all setting values, types etc.
-        public SettingItem(string SettingType, string SettingName, string SettingValue, string SettingSecondaryValue, string SettingUISerialization)
+        public SettingItem(ExcelReference ExcelReferenceOfSetting, string SettingType, string SettingName, string SettingValue, string SettingSecondaryValue, string SettingUISerialization)
         {
             _settingName = SettingName; _settingType = SettingType; _settingValue = SettingValue; _settingSecondaryValue = SettingSecondaryValue; _settingUISerialization = SettingUISerialization;
+            _settingExcelReference = ExcelReferenceOfSetting;
         }
 
-        public string SettingName { get => _settingName; set => _settingName = value; }
         public string SettingType { get => _settingType; set => _settingType = value; }
+        public string SettingName { get => _settingName; set => _settingName = value; }
         public string SettingValue { get => _settingValue; set => _settingValue = value; }
         public string SettingSecondaryValue { get => _settingSecondaryValue; set => _settingSecondaryValue = value; }
         public string SettingUISerialization { get => _settingUISerialization; set => _settingUISerialization = value; }
@@ -185,5 +205,30 @@ namespace ExcelBase
 
             return returnString;
         }
+
+        public void SaveSettingToSheet()
+        {
+            //save the settings array to the _settingExcelReference
+            //build the array
+            object testArray = this._settingExcelReference.GetValue();
+
+            string[,] stringArray = new string[1, 5];
+
+            stringArray[0, 0] = this.SettingType;
+            stringArray[0, 1] = this.SettingName;
+            stringArray[0, 2] = this.SettingValue;
+            stringArray[0, 3] = this.SettingSecondaryValue;
+            stringArray[0, 4] = this.SettingUISerialization;
+
+            for (int i = 0; i < 5; i++)
+            {
+                if (String.Equals(stringArray[0, i], "ExcelDna.Integration.ExcelEmpty")) { stringArray[0, i] = ""; }
+            }
+
+            this._settingExcelReference.SetValue(stringArray);
+
+        }
+
+
     }
 }

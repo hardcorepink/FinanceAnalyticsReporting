@@ -16,9 +16,9 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
             
         }
 
-        public override string ReportSettingsAnchor => throw new NotImplementedException();
+        
 
-        public override void SaveClassSettings()
+        public override void SettingsSavedToClass()
         {
             throw new NotImplementedException();
         }

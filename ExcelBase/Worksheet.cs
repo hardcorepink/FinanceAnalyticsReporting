@@ -12,7 +12,7 @@ namespace ExcelBase
     {
 
         #region Constructors
-        
+
         /// <summary>
         /// Constructs a Worksheet from the currently active sheet.
         /// </summary>
@@ -29,7 +29,7 @@ namespace ExcelBase
             catch
             {
                 throw new Exception("Could not create worksheet. Active Sheet is not worksheet type");
-            }  
+            }
 
         }
 
@@ -43,7 +43,7 @@ namespace ExcelBase
                 this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId, FullWorksheetReference);
                 this._workSheetPtr = this._baseExcelReference.SheetId;
             }
-            catch  
+            catch
             {
                 throw new Exception($"Could not create workbook from full worksheet reference: {FullWorksheetReference}");
             }
@@ -53,17 +53,17 @@ namespace ExcelBase
 
         #endregion Constructors
 
-        #region AttributeClasses
+        #region AttributeClass
 
         [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
         public sealed class WorksheetDerivedTypeIdentifierAttribute : Attribute
-        {            
+        {
             readonly string _a1Identifier;
 
             // This is a positional argument
             public WorksheetDerivedTypeIdentifierAttribute(string ClassIdentifierString)
             {
-                this._a1Identifier = ClassIdentifierString;                
+                this._a1Identifier = ClassIdentifierString;
             }
 
             public string ClassIdentifierString
@@ -71,12 +71,11 @@ namespace ExcelBase
                 get { return _a1Identifier; }
             }
 
-          
+
         }
 
 
         #endregion AttributeClasses
-
 
         #region fields
 
@@ -87,6 +86,8 @@ namespace ExcelBase
 
 
         #endregion fields
+
+        #region Properties
 
         //PROPERTIES ----------------------------------------------------------
 
@@ -160,8 +161,10 @@ namespace ExcelBase
             }
         }
 
+        #endregion Properties
 
-        //METHODS ----------------------------------------------------------
+        #region Methods
+                        
         public ExcelReference ReturnNamedRangeRef(string NamedRange)
         {
             string searchNamedRange = string.Format("'{0}'!{1}", this.ShortWorksheetName, NamedRange);
@@ -247,6 +250,28 @@ namespace ExcelBase
                 return fullWorksheetName;
             }
         }
+
+        /// <summary>
+        /// Activates the worksheet instance in excel, returns the Worksheet reference 
+        /// so can chaing together actions e.g. Worksheet.Activate().Calculate()
+        /// </summary>
+        public Worksheet Activate()
+        {
+            XlCall.Excel(XlCall.xlcWorkbookActivate, this.FullWorksheetName);
+            return this;
+        }
+
+        /// <summary>
+        /// Calculates the active worksheet. Make sure that this worksheet is active before calculating using
+        /// Worksheet.Activate()
+        /// </summary>
+        public Worksheet Calculate()
+        {
+            XlCall.Excel(XlCall.xlcCalculateDocument);
+            return this;
+        }
+
+        #endregion Methods
 
     }
 

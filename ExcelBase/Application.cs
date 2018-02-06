@@ -7,7 +7,7 @@ using ExcelDna.Integration;
 
 namespace ExcelBase
 {
-    public class Application
+    public static class Application
     {
         //Workbooks collection 
         //use Documents on page 104 to get all workbooks
@@ -19,14 +19,25 @@ namespace ExcelBase
             object[,] objectArrayOfWorkbooks = (object[,])arrayOfWorkbooks;
             List<string> listWorkbooks = new List<string>();
 
-            for(int i = 0; i < objectArrayOfWorkbooks.GetLength(1); i++)
+            for (int i = 0; i < objectArrayOfWorkbooks.GetLength(1); i++)
             {
                 listWorkbooks.Add((string)objectArrayOfWorkbooks[0, i]);
             }
 
             return listWorkbooks;
         }
+
+        public static void TurnScreenUpdatingOff()
+        {
+            XlCall.Excel(XlCall.xlcEcho, false);
+        }
+
+        public static void TurnScreenUpdatingOn()
+        {
+            XlCall.Excel(XlCall.xlcEcho, true);
+        }
     }
+
 
     //screen updating
     //use Echo on page 105 to turn on and off screen updating

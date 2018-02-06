@@ -120,6 +120,39 @@ namespace FinanceAnalyticsReporting
 
         }
 
+        [ExcelCommand(MenuName = "Hello", MenuText = "Evalate formula under selection")]
+        public static void EvaluateFormulaInSelection()
+        {
+
+            //first get the active cell
+            ExcelReference activeCell = (ExcelReference)XlCall.Excel(XlCall.xlfActiveCell);
+
+            //get the formula of the activeCell
+            object activeCellFormula = XlCall.Excel(XlCall.xlfGetFormula, activeCell);
+            string cellFormulaString = (string)activeCellFormula;
+
+            //evaluate the formula and display result as a messageBox
+            object Result = XlCall.Excel(XlCall.xlfGetCell, 6, activeCell);
+
+            string evalResult = (XlCall.Excel(XlCall.xlfEvaluate, Result)).ToString();
+
+            System.Windows.MessageBox.Show(evalResult);
+
+
+        }
+
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "Read Settings then save settings back to sheet")]
+        public static void ReadThenSaveSettings()
+        {
+
+            //first get instance of the activeSheet as a reportsheet
+            ReportWorksheet newReportSheet = new ReportWorksheet();
+
+            //now commit the read settings back to sheet
+            newReportSheet.CommitAllSettingsToSheet();
+
+        }
 
 
     }
