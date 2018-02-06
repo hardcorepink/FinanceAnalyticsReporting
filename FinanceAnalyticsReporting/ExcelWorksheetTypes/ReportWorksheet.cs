@@ -36,9 +36,9 @@ namespace FinanceAnalyticsReporting
 
             //get a handle to the data workbook
             SettingItem dataWorkbookSetting = this.listClassSettings.FirstOrDefault(s =>
-                String.Equals(s.SettingName, "DataWorkbook", StringComparison.OrdinalIgnoreCase));
+                String.Equals(s.SettingName.ToString(), "DataWorkbook", StringComparison.OrdinalIgnoreCase));
 
-            Workbook dataWorkbookInst = new Workbook(dataWorkbookSetting.SettingValue);
+            Workbook dataWorkbookInst = new Workbook(dataWorkbookSetting.SettingValue.ToString());
 
         }
 

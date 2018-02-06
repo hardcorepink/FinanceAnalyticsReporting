@@ -97,11 +97,11 @@ namespace ExcelBase
                                 settingsBlock.ColumnFirst,
                                 settingsBlock.ColumnLast),
 
-                            objBlockValues[i, 0].ToString(),
-                            objBlockValues[i, 1].ToString(),
-                            objBlockValues[i, 2].ToString(),
-                            objBlockValues[i, 3].ToString(),
-                            objBlockValues[i, 4].ToString()
+                            objBlockValues[i, 0],
+                            objBlockValues[i, 1],
+                            objBlockValues[i, 2],
+                            objBlockValues[i, 3],
+                            objBlockValues[i, 4]
                             ));
                     }
                 }
@@ -114,15 +114,15 @@ namespace ExcelBase
                 //ok now we have all settings. In this base class we will do some sorting of the settings for the derived classes
                 this.listGenericSettings = new List<SettingItem>();
                 this.listGenericSettings = this.listAllSettings.Where(s =>
-                    string.Equals(s.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase)).ToList();
+                    string.Equals(s.SettingType.ToString(), "genericSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 this.listClassSettings = new List<SettingItem>();
                 this.listClassSettings = this.listAllSettings.Where(s =>
-                    string.Equals(s.SettingType, "classSetting", StringComparison.OrdinalIgnoreCase)).ToList();
+                    string.Equals(s.SettingType.ToString(), "classSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 this.listClassSettings = new List<SettingItem>();
                 this.listClassSettings = this.listAllSettings.Where(s =>
-                    string.Equals(s.SettingType, "calcualtedSetting", StringComparison.OrdinalIgnoreCase)).ToList();
+                    string.Equals(s.SettingType.ToString(), "calcualtedSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 this.SettingsSavedToClass();
             }
@@ -135,16 +135,16 @@ namespace ExcelBase
         public virtual void SaveIncomingSettingsToList(List<SettingItem> incomingSettingsList)
         {
             //filter out the settings, as settings in will make availabe genericSettings and calculatedSettings, but this class will only overwrite instances of genericsettings
-            var genericSettingsIn = incomingSettingsList.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase) ||
-                String.Equals(x.SettingType, "calculatedSetting", StringComparison.OrdinalIgnoreCase));
+            var genericSettingsIn = incomingSettingsList.Where(x => String.Equals(x.SettingType.ToString(), "genericSetting", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(x.SettingType.ToString(), "calculatedSetting", StringComparison.OrdinalIgnoreCase));
 
-            var thisGenericSettings = this.listAllSettings.Where(x => String.Equals(x.SettingType, "genericSetting", StringComparison.OrdinalIgnoreCase));
+            var thisGenericSettings = this.listAllSettings.Where(x => String.Equals(x.SettingType.ToString(), "genericSetting", StringComparison.OrdinalIgnoreCase));
 
             foreach (SettingItem inSetting in genericSettingsIn)
             {
                 foreach (SettingItem currentSetting in thisGenericSettings)
                 {
-                    if (string.Equals(inSetting.SettingName, currentSetting.SettingName, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(inSetting.SettingName.ToString(), currentSetting.SettingName.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         currentSetting.SettingValue = inSetting.SettingValue;
                         currentSetting.SettingSecondaryValue = inSetting.SettingSecondaryValue;
@@ -160,7 +160,7 @@ namespace ExcelBase
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            List<SettingItem> commitList = this.listAllSettings.Where(s => (string.Equals(s.SettingType, "calculatedSetting", StringComparison.OrdinalIgnoreCase) == false)).ToList();
+            List<SettingItem> commitList = this.listAllSettings.Where(s => (string.Equals(s.SettingType.ToString(), "calculatedSetting", StringComparison.OrdinalIgnoreCase) == false)).ToList();
 
             commitList.ForEach(s => s.SaveSettingToSheet());
 
@@ -176,32 +176,32 @@ namespace ExcelBase
 
     public class SettingItem
     {
-        private string _settingName;
-        private string _settingType;
-        private string _settingValue;
-        private string _settingSecondaryValue;
-        private string _settingUISerialization;
+        private object _settingName;
+        private object _settingType;
+        private object _settingValue;
+        private object _settingSecondaryValue;
+        private object _settingUISerialization;
 
         private ExcelReference _settingExcelReference;
 
 
         //ctor to take all setting values, types etc.
-        public SettingItem(ExcelReference ExcelReferenceOfSetting, string SettingType, string SettingName, string SettingValue, string SettingSecondaryValue, string SettingUISerialization)
+        public SettingItem(ExcelReference ExcelReferenceOfSetting, object SettingType, object SettingName, object SettingValue, object SettingSecondaryValue, object SettingUISerialization)
         {
             _settingName = SettingName; _settingType = SettingType; _settingValue = SettingValue; _settingSecondaryValue = SettingSecondaryValue; _settingUISerialization = SettingUISerialization;
             _settingExcelReference = ExcelReferenceOfSetting;
         }
 
-        public string SettingType { get => _settingType; set => _settingType = value; }
-        public string SettingName { get => _settingName; set => _settingName = value; }
-        public string SettingValue { get => _settingValue; set => _settingValue = value; }
-        public string SettingSecondaryValue { get => _settingSecondaryValue; set => _settingSecondaryValue = value; }
-        public string SettingUISerialization { get => _settingUISerialization; set => _settingUISerialization = value; }
+        public object SettingType { get => _settingType; set => _settingType = value; }
+        public object SettingName { get => _settingName; set => _settingName = value; }
+        public object SettingValue { get => _settingValue; set => _settingValue = value; }
+        public object SettingSecondaryValue { get => _settingSecondaryValue; set => _settingSecondaryValue = value; }
+        public object SettingUISerialization { get => _settingUISerialization; set => _settingUISerialization = value; }
 
         public override string ToString()
         {
             string returnString = String.Format("SettingType = {0} | SettingName = {1} | SettingValue = {2}, SettingSecondaryValue = {3}",
-                this.SettingType, this.SettingName, this.SettingValue, this.SettingSecondaryValue);
+                this.SettingType.ToString(), this.SettingName.ToString(), this.SettingValue.ToString(), this.SettingSecondaryValue.ToString());
 
             return returnString;
         }
@@ -212,20 +212,20 @@ namespace ExcelBase
             //build the array
             object testArray = this._settingExcelReference.GetValue();
 
-            string[,] stringArray = new string[1, 5];
+            object[,] outArray = new object[1, 5];
 
-            stringArray[0, 0] = this.SettingType;
-            stringArray[0, 1] = this.SettingName;
-            stringArray[0, 2] = this.SettingValue;
-            stringArray[0, 3] = this.SettingSecondaryValue;
-            stringArray[0, 4] = this.SettingUISerialization;
+            outArray[0, 0] = this.SettingType;
+            outArray[0, 1] = this.SettingName;
+            outArray[0, 2] = this.SettingValue;
+            outArray[0, 3] = this.SettingSecondaryValue;
+            outArray[0, 4] = this.SettingUISerialization;
 
-            for (int i = 0; i < 5; i++)
-            {
-                if (String.Equals(stringArray[0, i], "ExcelDna.Integration.ExcelEmpty")) { stringArray[0, i] = ""; }
-            }
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    if (String.Equals(outArray[0, i], "ExcelDna.Integration.ExcelEmpty")) { outArray[0, i] = ""; }
+            //}
 
-            this._settingExcelReference.SetValue(stringArray);
+            this._settingExcelReference.SetValue(outArray);
 
         }
 
