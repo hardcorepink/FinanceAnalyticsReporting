@@ -91,17 +91,8 @@ namespace ExcelBase
                     for (int i = 0; i < rows; i++)
                     {
                         this.listAllSettings.Add(new SettingItem(
-                            new ExcelReference(
-                                settingsBlock.RowFirst + i,
-                                settingsBlock.RowFirst + i,
-                                settingsBlock.ColumnFirst,
-                                settingsBlock.ColumnLast),
-
-                            objBlockValues[i, 0],
-                            objBlockValues[i, 1],
-                            objBlockValues[i, 2],
-                            objBlockValues[i, 3],
-                            objBlockValues[i, 4]
+                            new ExcelReference(settingsBlock.RowFirst + i, settingsBlock.RowFirst + i, settingsBlock.ColumnFirst, settingsBlock.ColumnLast),
+                            objBlockValues[i, 0], objBlockValues[i, 1], objBlockValues[i, 2], objBlockValues[i, 3], objBlockValues[i, 4]
                             ));
                     }
                 }
@@ -112,16 +103,13 @@ namespace ExcelBase
                 }
 
                 //ok now we have all settings. In this base class we will do some sorting of the settings for the derived classes
-                this.listGenericSettings = new List<SettingItem>();
                 this.listGenericSettings = this.listAllSettings.Where(s =>
                     string.Equals(s.SettingType.ToString(), "genericSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                this.listClassSettings = new List<SettingItem>();
                 this.listClassSettings = this.listAllSettings.Where(s =>
                     string.Equals(s.SettingType.ToString(), "classSetting", StringComparison.OrdinalIgnoreCase)).ToList();
-
-                this.listClassSettings = new List<SettingItem>();
-                this.listClassSettings = this.listAllSettings.Where(s =>
+                                
+                this.listCalculatedSettings = this.listAllSettings.Where(s =>
                     string.Equals(s.SettingType.ToString(), "calcualtedSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 
                 this.SettingsSavedToClass();
@@ -176,8 +164,8 @@ namespace ExcelBase
 
     public class SettingItem
     {
-        private object _settingName;
         private object _settingType;
+        private object _settingName;
         private object _settingValue;
         private object _settingSecondaryValue;
         private object _settingUISerialization;
@@ -198,13 +186,6 @@ namespace ExcelBase
         public object SettingSecondaryValue { get => _settingSecondaryValue; set => _settingSecondaryValue = value; }
         public object SettingUISerialization { get => _settingUISerialization; set => _settingUISerialization = value; }
 
-        public override string ToString()
-        {
-            string returnString = String.Format("SettingType = {0} | SettingName = {1} | SettingValue = {2}, SettingSecondaryValue = {3}",
-                this.SettingType.ToString(), this.SettingName.ToString(), this.SettingValue.ToString(), this.SettingSecondaryValue.ToString());
-
-            return returnString;
-        }
 
         public void SaveSettingToSheet()
         {
@@ -220,15 +201,17 @@ namespace ExcelBase
             outArray[0, 3] = this.SettingSecondaryValue;
             outArray[0, 4] = this.SettingUISerialization;
 
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    if (String.Equals(outArray[0, i], "ExcelDna.Integration.ExcelEmpty")) { outArray[0, i] = ""; }
-            //}
-
             this._settingExcelReference.SetValue(outArray);
 
         }
 
+        public override string ToString()
+        {
+            string returnString = String.Format("SettingType = {0} | SettingName = {1} | SettingValue = {2}, SettingSecondaryValue = {3}",
+                this.SettingType.ToString(), this.SettingName.ToString(), this.SettingValue.ToString(), this.SettingSecondaryValue.ToString());
+
+            return returnString;
+        }
 
     }
 }

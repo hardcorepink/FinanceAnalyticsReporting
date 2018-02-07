@@ -58,7 +58,7 @@
     </Page>
     <Compile Include="Application\AddInStartupShutdown.cs" />
     <Compile Include="Testing\ClassTesting.cs" />
-    <Compile Include="ExcelWorksheetTypes\ActiveFormDataSheet.cs" />
+    <Compile Include="ExcelWorksheetTypes\ActiveFormDataProvider.cs" />
     <Compile Include="ExcelWorksheetTypes\ReportWorksheet.cs" />
     <Compile Include="MVVM Assets\UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>

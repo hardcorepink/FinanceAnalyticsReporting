@@ -124,7 +124,7 @@ namespace ExcelBase
         /// Given full file path will attempt to open a workbook. Will rethrow if there is an exception,
         /// returns a Workbook object if open is successful.
         /// </summary>
-        private static string AttemptOpen(string fullFilePath, bool checkIfAlreadyOpen = true,
+                 static string AttemptOpen(string fullFilePath, bool checkIfAlreadyOpen = true,
             ExcelEnums.XlUpdateLinks update_links = ExcelEnums.XlUpdateLinks.Never,
             bool read_only = false, string password = null)
         {

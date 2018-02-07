@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ExcelBase;
 using System.Diagnostics;
 
-namespace FinanceAnalyticsReporting
+namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
 {
     [ExcelBase.Worksheet.WorksheetDerivedTypeIdentifier("ReportWorksheet")]
     public class ReportWorksheet : WorksheetWithSettings
@@ -14,8 +14,7 @@ namespace FinanceAnalyticsReporting
         public override void SettingsSavedToClass()
         {
             //ok we have 4 lists to work with, do we do anything here?
-
-
+            
         }
 
         public ReportWorksheet() : base()
@@ -27,6 +26,8 @@ namespace FinanceAnalyticsReporting
         public void ReloadReportWorksheet()
         {
             //First what are the most recent settings the ones in the lists or the ones on the sheet?
+            //turn off screen updating
+            ExcelBase.Application.TurnScreenUpdatingOff();
 
             //We consider the class settings the master settings.
             this.CommitAllSettingsToSheet();
@@ -34,12 +35,11 @@ namespace FinanceAnalyticsReporting
             //activate and calculate the sheet
             this.Activate().Calculate();
 
-            //get a handle to the data workbook
-            SettingItem dataWorkbookSetting = this.listClassSettings.FirstOrDefault(s =>
-                String.Equals(s.SettingName.ToString(), "DataWorkbook", StringComparison.OrdinalIgnoreCase));
+            List<Tuple<SettingItem, object>> listData = ActiveFormDataProvider.ReturnDataFromNamedRanges(this.listAllSettings);
 
-            Workbook dataWorkbookInst = new Workbook(dataWorkbookSetting.SettingValue.ToString());
 
+            ExcelBase.Application.TurnScreenUpdatingOn();
+  
         }
 
         #region properties

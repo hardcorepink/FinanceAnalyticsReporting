@@ -50,6 +50,19 @@ namespace ExcelBase
 
         }
 
+        public Worksheet(IntPtr sheetID)
+        {
+            try
+            {
+                this._baseExcelReference = new ExcelReference(0, 0, 0, 0, sheetID);
+                this._workSheetPtr = this._baseExcelReference.SheetId;
+            }
+            catch
+            {
+                throw new Exception($"Could not create workbook from sheet id: {sheetID.ToString()}");
+            }
+        }
+
 
         #endregion Constructors
 

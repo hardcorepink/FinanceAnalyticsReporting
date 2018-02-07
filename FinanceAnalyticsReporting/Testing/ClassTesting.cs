@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ExcelDna.Integration;
 using ExcelBase;
 using System.Diagnostics;
+using FinanceAnalyticsReporting.ExcelWorksheetTypes;
 
 namespace FinanceAnalyticsReporting
 {
@@ -151,6 +152,18 @@ namespace FinanceAnalyticsReporting
 
             //now commit the read settings back to sheet
             newReportSheet.CommitAllSettingsToSheet();
+
+        }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "Reload Report Worksheet")]
+        public static void ReloadReportWorksheet()
+        {
+
+            //first get instance of the activeSheet as a reportsheet
+            ReportWorksheet newReportSheet = new ReportWorksheet();
+
+            //now commit the read settings back to sheet
+            newReportSheet.ReloadReportWorksheet();
 
         }
 
