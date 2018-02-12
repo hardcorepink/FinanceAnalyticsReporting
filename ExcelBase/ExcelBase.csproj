@@ -50,6 +50,7 @@
     <Compile Include="Workbook.cs" />
     <Compile Include="NamedRange.cs" />
     <Compile Include="Worksheet.cs" />
+    <Compile Include="WorksheetWithNamedRangeSettings.cs" />
     <Compile Include="WorksheetWithSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

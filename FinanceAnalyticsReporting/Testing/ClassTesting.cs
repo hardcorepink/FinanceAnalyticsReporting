@@ -96,7 +96,7 @@ namespace FinanceAnalyticsReporting
             {
                 System.Windows.MessageBox.Show("Could not find Hello sheet in active workbook");
             }
-                
+
         }
 
         [ExcelCommand(MenuName = "Hello", MenuText = "TestFullWorksheetConstrcutor")]
@@ -105,7 +105,7 @@ namespace FinanceAnalyticsReporting
 
             var worksheetString = "[Book4]Hello";
             var newWS = new Worksheet(worksheetString);
-                        
+
         }
 
         [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetIterator")]
@@ -114,7 +114,7 @@ namespace FinanceAnalyticsReporting
 
             var activeWB = new Workbook(false);
 
-            foreach(Worksheet ws in activeWB.Worksheets)
+            foreach (Worksheet ws in activeWB.Worksheets)
             {
                 System.Windows.MessageBox.Show(ws.FullWorksheetName);
             }
@@ -166,6 +166,125 @@ namespace FinanceAnalyticsReporting
             newReportSheet.ReloadReportWorksheet();
 
         }
+
+        [ExcelCommand(MenuName = "Hello", MenuText = "Evaluate Test")]
+        public static void EvaluateSheet1Test()
+        {
+            object result3;
+            object result8;
+            object result1 = XlCall.Excel(XlCall.xlfGetName, @"'Sheet1'!Test");
+
+            object result = XlCall.Excel(XlCall.xlfEvaluate, @"'Sheet1'!Test");
+
+           
+                string newResult1String = result1.ToString().Substring(1);
+               
+                object anotherResult = (XlCall.Excel(XlCall.xlfTextref, newResult1String, false)).ToString();
+
+                result3 = XlCall.Excel(XlCall.xlfEvaluate, newResult1String);
+
+
+                result3 = XlCall.Excel(XlCall.xlfEvaluate, result);
+                result8 = ((ExcelReference)result3).GetValue();
+           
+
+            string outResult = $"Straight Get Name Result: {result1.ToString()} {Environment.NewLine}" +
+                $"Type {result1.GetType().Name} {Environment.NewLine} {Environment.NewLine}" +
+                $"Evaluate Result: {result.ToString()} {Environment.NewLine}" +
+                $"Type {result.GetType().Name} {Environment.NewLine} {Environment.NewLine}" +
+                $"Evaluate the Get Name - Result: {result8.ToString()} {Environment.NewLine}" +
+                $"Type {result3.GetType().Name} {Environment.NewLine} {Environment.NewLine}";
+
+            System.Windows.MessageBox.Show(outResult);
+
+
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "Report Settings")]
+        public static void ShowReportSettings()
+        {
+            ExcelWorksheetTypes.ReportWorksheet newReportWS = new ExcelWorksheetTypes.ReportWorksheet();
+            //show the property grid window
+            MVVM_Assets.ReportSettingsWindow newReportSettingsWindow = new MVVM_Assets.ReportSettingsWindow(newReportWS);
+            newReportSettingsWindow.Show();
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "Get List WorksheetNames")]
+        public static void GetListWorksheetNames()
+        {
+            ExcelWorksheetTypes.ReportWorksheet newReportWS = new ExcelWorksheetTypes.ReportWorksheet();
+            //show the property grid window
+            List<ExcelBase.NamedRange> WorksheetNamesCollection = newReportWS.NamesCollection;
+
+            foreach (NamedRange nr in WorksheetNamesCollection)
+            {
+                Debug.WriteLine(nr.NameRef);
+            }
+
+
+        }
+
+
+        
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "putInLongStringFromA1")]
+        public static void PutInLongStringFromA1()
+        {
+            Worksheet newWS = new Worksheet();
+
+            ExcelReference A1Ref = new ExcelReference(0, 0, 0, 0, newWS.WorkSheetPtr);
+            ExcelReference A2Ref = new ExcelReference(0, 0, 1, 1, newWS.WorkSheetPtr);
+
+            int A1RefInt = Convert.ToInt16(A1Ref.GetValue());
+
+            string newString = new string('a', A1RefInt);
+
+            A2Ref.SetValue(newString);
+
+
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "BinarySerializeToA2")]
+        public static void BinarySerializeToA2()
+        {
+            ExcelBase.WorksheetWithNamedRangeSettings newReportWS = new ExcelBase.WorksheetWithNamedRangeSettings();
+
+            for (int i = 0; i < 20; i++)
+            {
+                NamedRangeSetting nrs = new NamedRangeSetting
+                {
+                    SettingName = $"Hello {i.ToString()}",
+                    SettingSecondaryValue = $"Hey {i.ToString()}"
+                };
+
+                newReportWS.SettingsList.AddSetting(nrs);
+            }
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            //time this part
+            newReportWS.BinarySerializeSettingsToA2();
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Debug.WriteLine($"Serialized Binary in {elapsedMs.ToString()} ms");
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "BinaryDeSerializeFromA2")]
+        public static void BinaryDeSerializeFromA2()
+        {
+            ExcelBase.WorksheetWithNamedRangeSettings newReportWS = new ExcelBase.WorksheetWithNamedRangeSettings();
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+
+            newReportWS.BinaryDeSerializeA2ToSettings();
+
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            Debug.WriteLine($"DeSerialized Binary in {elapsedMs.ToString()} ms");
+
+        }
+
 
 
     }

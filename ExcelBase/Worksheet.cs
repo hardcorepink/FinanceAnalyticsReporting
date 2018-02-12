@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -174,10 +175,38 @@ namespace ExcelBase
             }
         }
 
+        public List<NamedRange> NamesCollection 
+        {
+            get
+            {
+                List<NamedRange> ListNames = new List<NamedRange>();
+
+                //setup the collection here - we are just looking for sheet defined names
+                object arrayOfNames = XlCall.Excel(XlCall.xlfNames, this.ParentWorkbook.Name, 3);
+
+                if (arrayOfNames is object[,] arrayOfNamesConverted)
+                {
+                    int lengthOfArray = arrayOfNamesConverted.GetLength(1);
+                    for (int i = 0; i < lengthOfArray; i++)
+                    {
+                        try
+                        {
+                            string tryWSName = @"'" + this.ShortWorksheetName + @"'!" + (string)arrayOfNamesConverted[0, i];
+                            Boolean wsScoped = (Boolean)XlCall.Excel(XlCall.xlfGetName, tryWSName, 2);
+                            if (wsScoped) ListNames.Add(new NamedRange(this, (string)arrayOfNamesConverted[0, i]));
+                        }
+                        catch { }
+                    }
+                }
+
+                return ListNames;
+            }
+        }
+
         #endregion Properties
 
         #region Methods
-                        
+
         public ExcelReference ReturnNamedRangeRef(string NamedRange)
         {
             string searchNamedRange = string.Format("'{0}'!{1}", this.ShortWorksheetName, NamedRange);
@@ -285,6 +314,14 @@ namespace ExcelBase
         }
 
         #endregion Methods
+
+        #region subClasses
+
+        
+
+
+        #endregion subClasses
+
 
     }
 
