@@ -12,17 +12,23 @@ namespace ExcelBase
     public static partial class ExcelApplication
     {
 
-        #region fields
-        private static WorkbookCollection _workbooks = new WorkbookCollection();
-        #endregion fields
+        #region constructor
 
         static ExcelApplication()
         {
             //static constructor if required
         }
 
+        #endregion constructor
+        
+        #region fields
+
+        private static WorkbookCollection _workbooks = new WorkbookCollection();
+
+        #endregion fields
 
         #region properties
+
         public static bool ScreenUpdating
         {
             get { return (bool)XlCall.Excel(XlCall.xlfGetWorkspace, 40); }
@@ -34,10 +40,10 @@ namespace ExcelBase
             get { return _workbooks; }
         }
 
+        #endregion properties
 
+        #region nestedClasses
 
-        //screen updating
-        //use Echo on page 105 to turn on and off screen updating
         public class WorkbookCollection : IEnumerable<Workbook>
         {
 
@@ -106,8 +112,7 @@ namespace ExcelBase
                     return null;
                 }
             }
-
-
+            
             /// <summary>
             /// Returns a Workbook instance if finds a workbook with matching file path. Else returns a null Workook.
             /// </summary>
@@ -115,7 +120,6 @@ namespace ExcelBase
             /// <returns></returns>
             public Workbook this[FileInfo key]
             {
-
                 get
                 {
                     string pathLookingFor = Path.GetFullPath(key.FullName);
@@ -134,15 +138,14 @@ namespace ExcelBase
                     return null;
                 }
             }
-
-
-
-
+            
         }
+        #endregion nestedClasses
+
     }
 
 
-    #endregion properties
+
 }
 
 
