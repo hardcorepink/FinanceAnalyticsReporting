@@ -179,7 +179,7 @@ namespace FinanceAnalyticsReporting
 
             foreach (NamedRange nr in WorksheetNamesCollection)
             {
-                Debug.WriteLine(nr.NameRef);
+                //Debug.WriteLine(nr.NameRef);
             }
 
 

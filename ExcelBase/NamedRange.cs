@@ -41,7 +41,10 @@ namespace ExcelBase
 
         }
 
+        public NamedRange()
+        {
 
+        }
         
 
         public static NamedRange ReturnExistingNamedRange()
@@ -65,7 +68,7 @@ namespace ExcelBase
 
         #region methods
 
-        public bool WorksheetNameExists()
+       
 
 
 

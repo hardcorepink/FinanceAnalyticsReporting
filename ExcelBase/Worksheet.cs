@@ -191,9 +191,9 @@ namespace ExcelBase
                     {
                         try
                         {
-                            string tryWSName = @"'" + this.ShortWorksheetName + @"'!" + (string)arrayOfNamesConverted[0, i];
-                            Boolean wsScoped = (Boolean)XlCall.Excel(XlCall.xlfGetName, tryWSName, 2);
-                            if (wsScoped) ListNames.Add(new NamedRange(this, (string)arrayOfNamesConverted[0, i]));
+                            //string tryWSName = @"'" + this.ShortWorksheetName + @"'!" + (string)arrayOfNamesConverted[0, i];
+                            //Boolean wsScoped = (Boolean)XlCall.Excel(XlCall.xlfGetName, tryWSName, 2);
+                            //if (wsScoped) ListNames.Add(new NamedRange(this, (string)arrayOfNamesConverted[0, i]));
                         }
                         catch { }
                     }

@@ -15,7 +15,19 @@ namespace ExcelBase
         #region properties
         public string Name { get => _workbookName; }
 
-
+        public FileInfo FileInfo
+        {
+            get
+            {
+                try
+                {
+                    string filePath = (string)XlCall.Excel(XlCall.xlfGetDocument, 2, this.Name);
+                    string fullFilePath = string.Format($"{filePath}\\{Name}");
+                    return new FileInfo(fullFilePath);
+                }
+                catch { return null; }
+            }
+        }
 
 
         #endregion properties
@@ -41,9 +53,9 @@ namespace ExcelBase
             }
             catch { throw; }
         }
-              
+
         #endregion constructors       
-                 
+
 
         public void HideAllWorkbookWindows()
         {
@@ -133,7 +145,7 @@ namespace ExcelBase
             {
                 object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
                 long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
-                for (int i = 0; i < numberSheets;      i++)
+                for (int i = 0; i < numberSheets; i++)
                 {
                     //always need to try constructing a worksheet, just in case it can't work (chart sheet for excample)
                     Worksheet WorksheetToReturn;
@@ -157,7 +169,7 @@ namespace ExcelBase
 
 
 
-        
+
 
     }
 }

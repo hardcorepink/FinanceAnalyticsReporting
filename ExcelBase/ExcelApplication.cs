@@ -128,10 +128,10 @@ namespace ExcelBase
                         //get the full file name of the wb
                         try
                         {
-                            string filePath = (string)XlCall.Excel(XlCall.xlfGetDocument, 2, wb.Name);
-                            string fullFilePath = string.Format($"{filePath}\\{wb.Name}");
-                            string pathMatchPotential = Path.GetFullPath(fullFilePath);
-                            if (string.Equals(pathLookingFor, pathMatchPotential, StringComparison.OrdinalIgnoreCase)) { return wb; }
+                            if (wb.FileInfo != null)
+                            {
+                                if (string.Equals(pathLookingFor, wb.FileInfo.FullName, StringComparison.OrdinalIgnoreCase)) { return wb; }
+                            }
                         }
                         catch { }
                     }
