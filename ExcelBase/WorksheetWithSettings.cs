@@ -144,7 +144,7 @@ namespace ExcelBase
         public virtual void CommitAllSettingsToSheet()
         {
 
-            Application.TurnScreenUpdatingOff();
+            ExcelApplication.ScreenUpdating = false;
 
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -157,7 +157,7 @@ namespace ExcelBase
 
             System.Diagnostics.Debug.WriteLine($"Commit settings in {elapsedMs.ToString()} ms");
 
-            Application.TurnScreenUpdatingOn();
+            ExcelApplication.ScreenUpdating = true;
 
         }
     }

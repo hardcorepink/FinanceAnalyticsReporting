@@ -167,7 +167,7 @@ namespace ExcelBase
                 //first get the workbook name
                 string workbookName = this.WorkbookName;
 
-                Workbook newWB = new Workbook(workbookName, true);
+                Workbook newWB = new Workbook(workbookName);
 
                 return newWB;
                 //then get the list of 

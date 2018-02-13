@@ -33,20 +33,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-        [ExcelCommand(MenuName = "Hello", MenuText = "Create new workbook")]
-        public static void CreateNewWorkbook()
-        {
-
-            Workbook newWB = new Workbook(true);
-        }
-
-        [ExcelCommand(MenuName = "Hello", MenuText = "Hide all windows belonging to active workbook")]
-        public static void HideAllWindows()
-        {
-            Workbook newWB = new Workbook(false);
-            newWB.HideAllWorkbookWindows();
-
-        }
+       
 
         [ExcelCommand(MenuName = "Hello", MenuText = "Create new worksheet from active sheet")]
         public static void CreateNewWorksheetObject()
@@ -82,22 +69,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-        [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetIndexer")]
-        public static void TestWorksheetIndexer()
-        {
-            Workbook newWB = new Workbook(false);
-            Worksheet tryWS = newWB.Worksheets["Hello"];
-            if (tryWS != null)
-            {
-                string wsName = tryWS.ShortWorksheetName;
-                System.Windows.MessageBox.Show(tryWS.ShortWorksheetName);
-            }
-            else
-            {
-                System.Windows.MessageBox.Show("Could not find Hello sheet in active workbook");
-            }
-
-        }
+        
 
         [ExcelCommand(MenuName = "Hello", MenuText = "TestFullWorksheetConstrcutor")]
         public static void TestFullWorksheetConstrcutor()
@@ -108,18 +80,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-        [ExcelCommand(MenuName = "Hello", MenuText = "TestWorksheetIterator")]
-        public static void TestWorksheetIterator()
-        {
-
-            var activeWB = new Workbook(false);
-
-            foreach (Worksheet ws in activeWB.Worksheets)
-            {
-                System.Windows.MessageBox.Show(ws.FullWorksheetName);
-            }
-
-        }
+       
 
         [ExcelCommand(MenuName = "Hello", MenuText = "Evalate formula under selection")]
         public static void EvaluateFormulaInSelection()
@@ -285,7 +246,38 @@ namespace FinanceAnalyticsReporting
 
         }
 
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "OpenWorkbookInA1")]
+        public static void OpenWorkbookInA1()
+        {
+            Worksheet newWS = new Worksheet();
+            ExcelReference excelRef = new ExcelReference(0, 0, 0, 0, newWS.WorkSheetPtr);
+            string val = (string)excelRef.GetValue();
+            System.IO.FileInfo newFI = new System.IO.FileInfo(val);
+            Workbook newWB = ExcelApplication.Workbooks[newFI];
+            
+                try
+                {
+                    newWB = ExcelApplication.Workbooks.Open(val);
+                    System.Windows.MessageBox.Show($"New workbook = {newWB.Name}");
+                }
+                catch(Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Could not open : {ex.Message}");
+                }
+            
 
+
+            
+
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "GetWorkbookStatusInA1")]
+        public static void GetWorkbookStatusInA1()
+        {
+
+
+
+        }
 
     }
 }

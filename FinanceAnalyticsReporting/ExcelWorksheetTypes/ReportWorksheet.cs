@@ -34,7 +34,7 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
         {
             //First what are the most recent settings the ones in the lists or the ones on the sheet?
             //turn off screen updating
-            ExcelBase.Application.TurnScreenUpdatingOff();
+            ExcelBase.ExcelApplication.ScreenUpdating = false;
 
             //We consider the class settings the master settings.
             this.CommitAllSettingsToSheet();
@@ -45,7 +45,7 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
             //List<Tuple<SettingItem, object>> listData = ActiveFormDataProvider.ReturnDataFromNamedRanges(this.listAllSettings);
 
 
-            ExcelBase.Application.TurnScreenUpdatingOn();
+            ExcelBase.ExcelApplication.ScreenUpdating = true;
 
         }
 
