@@ -102,46 +102,86 @@ namespace ExcelBase
 
     }
 
-    public class NamedRangeSetting
+    public class NamedRangeSetting : NamedRange
     {
         NamedRangeSettings _parentListNamedRangeSettings;
-        string _settingType;            //this is the type e.g. classSetting, genericSetting, etc.
-        string _settingName;            //this is the named range name
-        string _settingRefText;         //the name value as defined in the name manager. e.g. if Sales is defines as 523 returns "=523"           
-        object _evaluatedSettingValue;  //returns the evaluated ref text using Evaluate formula. 
-        string _settingSecondaryValue;  //a secondary setting that can use for extra info, placeholders etc.
-        string _settingGUISerializationString;  //gui string to define how this setting will display gui control
-        
+        private string _settingType;                    //this is the type e.g. classSetting, genericSetting, etc.
+        private string _settingName;                    //this is the named range name
+        private string _settingNameDefinition;                 //the definition of the name - e.g. "=A1", "=523" etc.      
+        private object _evaluatedSettingValue;          //returns the evaluated ref text using Evaluate formula. 
+        private string _settingSecondaryValue;          //a secondary setting that can use for extra info, placeholders etc.
+        private string _settingGUISerializationString;  //gui string to define how this setting will display gui control
+        private bool _settingSharedOut;
+        private bool _settingCanBeOverwritten;
 
-        //need a default constructor for serialization
-        public NamedRangeSetting()
+        private string _settingFullName;
+         
+
+        public string SettingType
         {
-
+            get => _settingType;
+            set => _settingType = value;
         }
-
 
         public string SettingName
         {
-            get { return _settingName; }
-            set { this._settingName = value; }
+            get => _settingName;
+
+            set
+            {
+                //try and define a new setting
+
+
+
+                //try and delete the old setting name
+                try
+                {
+                    XlCall.Excel(XlCall.xlcDeleteName, this.SettingFullName);
+                }
+                catch { }
+
+            }
         }
 
+        public string SettingFullName
+        {
+            get
+            {
+                string wsName = this.ParentSettingsList.ParentSheet.FullWorksheetName;
+                return wsName + "!" + this._settingName;
+            }
+                        
+        }
+
+        public string SettingRefText
+        {
+            get
+            {                
+                return (string)XlCall.Excel(XlCall.xlfGetName, this.SettingFullName);
+            }
+            set
+            {
+                XlCall.Excel(XlCall.xlfSetName,this.SettingFullName, value);
+            }
+        }
+
+        
         public string SettingSecondaryValue
         {
-            get { return _settingSecondaryValue; }
-            set { _settingSecondaryValue = value; }
+            get => _settingSecondaryValue; 
+            set => _settingSecondaryValue = value; 
         }
 
         public string SettingGUISerializationString
         {
-            get { return _settingGUISerializationString; }
-            set { _settingGUISerializationString = value; }
+            get => _settingGUISerializationString; 
+            set => _settingGUISerializationString = value; 
         }
 
         public NamedRangeSettings ParentSettingsList
         {
-            get { return this._parentListNamedRangeSettings; }  
-            set { this._parentListNamedRangeSettings = value; }
+            get => this._parentListNamedRangeSettings; 
+            set => this._parentListNamedRangeSettings = value; 
         }
 
     }
