@@ -10,49 +10,68 @@ namespace ExcelBase
     public class NamedRange
     {
 
+        public enum NamedRangeScope
+        {
+            WorkbookScoped, WorksheetScoped
+        }
+
         #region fields
 
         private Worksheet _worksheet;
         private Workbook _workbook;
-        private string _name;
+        private string _shortName;
+        private string _fullRefName;
+        private NamedRangeScope _namedRangeScope;
 
         #endregion fields
 
         #region constructors
 
-        public NamedRange(Worksheet worksheet, string name)
+        private NamedRange(Worksheet worksheet, string shortName)
         {
-            //we are building a worksheet scoped named range
-            _worksheet = worksheet;
-            _name = name;
+            //we are getting a worksheet scoped name range - this will get a hadle to the name
+            //if it doesn't exist will return error
+            
+
         }
 
-        public NamedRange(Workbook workbook, string name)
+        private NamedRange(Workbook workbook, string shortName)
         {
-            _workbook = workbook;
-            _name = name;
+            
+
         }
 
+
+        
+
+        public static NamedRange ReturnExistingNamedRange()
+        {
+            return null;
+        }
+
+        public static NamedRange CreateNamedRange()
+        {
+            return null;
+        }
         #endregion constructors
 
-        public string NameLocal { get => _name; }
+        #region properties
 
-        public bool IsLocalScope { get => _worksheet != null; }
+        #endregion properties
 
-        public bool IsGlobalScope { get => _workbook != null; }
-            
-        public string RefersTo { get => (string)XlCall.Excel(XlCall.xlfGetName, this.NameRef, Type.Missing); }
 
-        public string NameRef
-        {
-            get
-            {
-                return (_workbook != null) ? _workbook.Name + "!" + _name :
-              _worksheet.FullWorksheetName.Contains(" ") ?
-              string.Format("'{0}'!{1}", _worksheet.FullWorksheetName, _name) :
-              string.Format("{0}!{1}", _worksheet.FullWorksheetName, _name);
-            }
-        }
+
+
+
+        #region methods
+
+        public bool WorksheetNameExists()
+
+
+
+        #endregion methods
+
+
 
 
     }
