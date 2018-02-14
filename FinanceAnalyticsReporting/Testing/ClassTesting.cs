@@ -279,5 +279,28 @@ namespace FinanceAnalyticsReporting
 
         }
 
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "loopThroughWorkbooks")]
+        public static void TestWokbooksLooper()
+        {
+            string output= "";
+
+            foreach(Workbook wb in ExcelApplication.Workbooks)
+            {
+                output = output + wb.Name + Environment.NewLine;
+            }
+
+            System.Windows.MessageBox.Show(output);
+        }
+
+        [ExcelCommand(MenuName = "Report Settings", MenuText = "Hide all windows of Book4")]
+        public static void HideAllWindowsBookOne()
+        {
+            Workbook BookOne = ExcelApplication.Workbooks["Book4"];
+
+            if(BookOne != null) { BookOne.HideAllWorkbookWindows(); }
+
+            
+        }
+
     }
 }
