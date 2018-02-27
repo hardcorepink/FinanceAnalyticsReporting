@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceAnalyticsReporting",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelBase", "ExcelBase\ExcelBase.csproj", "{76ED2799-BC2A-4A9C-84FA-31AE28D71EC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelDna.Integration", "ExcelDna.Integration\ExcelDna.Integration.csproj", "{196735BC-5A5C-4A21-9FE4-EC01CB7F3DE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelDna.Loader", "ExcelDna.Loader\ExcelDna.Loader.csproj", "{59AE5BC6-F37E-4CE3-BAE3-796F807A9882}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{76ED2799-BC2A-4A9C-84FA-31AE28D71EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76ED2799-BC2A-4A9C-84FA-31AE28D71EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76ED2799-BC2A-4A9C-84FA-31AE28D71EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{196735BC-5A5C-4A21-9FE4-EC01CB7F3DE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{196735BC-5A5C-4A21-9FE4-EC01CB7F3DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{196735BC-5A5C-4A21-9FE4-EC01CB7F3DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{196735BC-5A5C-4A21-9FE4-EC01CB7F3DE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59AE5BC6-F37E-4CE3-BAE3-796F807A9882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59AE5BC6-F37E-4CE3-BAE3-796F807A9882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59AE5BC6-F37E-4CE3-BAE3-796F807A9882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59AE5BC6-F37E-4CE3-BAE3-796F807A9882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

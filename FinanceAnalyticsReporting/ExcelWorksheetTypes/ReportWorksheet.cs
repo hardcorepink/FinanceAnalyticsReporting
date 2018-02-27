@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using ExcelBase;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
-using Xceed.Wpf.Toolkit.PropertyGrid.Editors;
 using System.ComponentModel;
 using System.Windows;
-using Xceed.Wpf.Toolkit.PropertyGrid;
+
 
 namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
 {
@@ -56,7 +54,6 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
         [DisplayName("ExpectedAssemblyVersions")]
         [Description("The expected assembly versions.")]
         [Category("Mandatory")]
-        [ExpandableObject] 
         public List<AssemblyX> WorkbookOpenPath
         {
             get
@@ -69,7 +66,7 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
             set { workbookOpenPath = value; }
         }
 
-        [ExpandableObject] 
+
         public class AssemblyX
         {
             public string Name { get; set; }
@@ -88,5 +85,5 @@ namespace FinanceAnalyticsReporting.ExcelWorksheetTypes
 
     }
 
-    
+
 }

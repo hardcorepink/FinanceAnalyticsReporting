@@ -160,33 +160,7 @@ namespace FinanceAnalyticsReporting
 
 
         }
-
-        [ExcelCommand(MenuName = "Report Settings", MenuText = "Report Settings")]
-        public static void ShowReportSettings()
-        {
-            ExcelWorksheetTypes.ReportWorksheet newReportWS = new ExcelWorksheetTypes.ReportWorksheet();
-            //show the property grid window
-            MVVM_Assets.ReportSettingsWindow newReportSettingsWindow = new MVVM_Assets.ReportSettingsWindow(newReportWS);
-            newReportSettingsWindow.Show();
-        }
-
-        [ExcelCommand(MenuName = "Report Settings", MenuText = "Get List WorksheetNames")]
-        public static void GetListWorksheetNames()
-        {
-            ExcelWorksheetTypes.ReportWorksheet newReportWS = new ExcelWorksheetTypes.ReportWorksheet();
-            //show the property grid window
-            List<ExcelBase.NamedRange> WorksheetNamesCollection = newReportWS.NamesCollection;
-
-            foreach (NamedRange nr in WorksheetNamesCollection)
-            {
-                //Debug.WriteLine(nr.NameRef);
-            }
-
-
-        }
-
-
-        
+                       
 
         [ExcelCommand(MenuName = "Report Settings", MenuText = "putInLongStringFromA1")]
         public static void PutInLongStringFromA1()
@@ -201,8 +175,6 @@ namespace FinanceAnalyticsReporting
             string newString = new string('a', A1RefInt);
 
             A2Ref.SetValue(newString);
-
-
         }
 
         [ExcelCommand(MenuName = "Report Settings", MenuText = "BinarySerializeToA2")]
@@ -300,6 +272,30 @@ namespace FinanceAnalyticsReporting
             if(BookOne != null) { BookOne.HideAllWorkbookWindows(); }
 
             
+        }
+
+        [ExcelCommand(MenuName = "Big Data", MenuText = "Write Big Data To Excel")]
+        unsafe public static void NewBinaryName()
+        {
+            //here is the array of bytes we are going to save            
+            var sevenItems = new byte[] { 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A };
+
+            //now try passing the byte array and name (string) to create binary 
+            object result = XlCall.Excel(XlCall.xlDefineBinaryName, "Hello", sevenItems);
+
+        }
+
+        [ExcelCommand(MenuName = "Big Data", MenuText = "Get Big Data To Excel")]
+        unsafe public static void GetBinaryData()
+        {
+
+            byte[] result = (byte[])XlCall.Excel(XlCall.xlGetBinaryName, "Hello");
+
+            string resultString = System.Text.Encoding.UTF8.GetString(result);
+
+            System.Windows.Forms.MessageBox.Show(resultString);
+
+
         }
 
     }
