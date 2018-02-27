@@ -278,7 +278,7 @@ namespace FinanceAnalyticsReporting
         unsafe public static void NewBinaryName()
         {
             //here is the array of bytes we are going to save            
-            var sevenItems = new byte[] { 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A };
+            var sevenItems = new byte[] { 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A, 0x5A };
 
             //now try passing the byte array and name (string) to create binary 
             object result = XlCall.Excel(XlCall.xlDefineBinaryName, "Hello", sevenItems);

@@ -52,9 +52,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="_UNINSTALLED_ExcelBase-AddIn.dna" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ExcelDna.Integration\ExcelDna.Integration.csproj">
       <Project>{196735bc-5a5c-4a21-9fe4-ec01cb7f3de9}</Project>
       <Name>ExcelDna.Integration</Name>
