@@ -57,7 +57,10 @@ namespace ExcelBase
             get { return new WindowsCollection(this); }
         }
 
-
+        public NamedRangeCollection Names
+        {
+            get { return new NamedRangeCollection(this); }
+        }
 
         #endregion properties
 

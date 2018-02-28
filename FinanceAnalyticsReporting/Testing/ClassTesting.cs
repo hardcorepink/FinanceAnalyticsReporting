@@ -306,6 +306,36 @@ namespace FinanceAnalyticsReporting
 
         }
 
+        [ExcelCommand(MenuName = "Names", MenuText = "Get List of WorksheetNames")]
+        unsafe public static void GetListOfWorksheetNames()
+        {
+
+            //get values of cell a1 in active sheet
+
+            //no marshal of paramaters required
+
+
+            Worksheet activeSheet = new Worksheet();
+
+            System.Windows.Forms.MessageBox.Show(activeSheet.Names.ToString());
+
+        }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "Get List of WorkbookNames")]
+        public static void GetListOfWorkbookNames()
+        {
+
+            //get values of cell a1 in active sheet
+
+            //no marshal of paramaters required
+            Workbook activeWorkbook = new Workbook();
+
+
+
+            System.Windows.Forms.MessageBox.Show(activeWorkbook.Names.ToString());
+
+        }
+
 
     }
 }

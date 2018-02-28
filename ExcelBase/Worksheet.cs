@@ -146,6 +146,15 @@ namespace ExcelBase
         }
 
 
+        public NamedRangeCollection Names
+        {
+            get
+            {
+                return new NamedRangeCollection(this);
+            }
+        }
+
+
         #endregion Properties
 
         #region Methods
