@@ -297,11 +297,13 @@ namespace FinanceAnalyticsReporting
             //get values of cell a1 in active sheet
             
             //no marshal of paramaters required
-            Object listOfNames = XlCall.Excel(XlCall.xlfNames);
-
-
-
             
+
+            Worksheet activeSheet = new Worksheet();
+            string valueOfFirstCell = (string)activeSheet.Range["A1"].GetValue();
+            
+            Object listOfNames = XlCall.Excel(XlCall.xlfNames, valueOfFirstCell);
+
         }
 
 
