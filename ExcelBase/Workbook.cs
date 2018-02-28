@@ -10,27 +10,7 @@ namespace ExcelBase
     {
         #region fields        
         private string _workbookName;
-        #endregion fields
-
-        #region properties
-        public string Name { get => _workbookName; }
-
-        public FileInfo FileInfo
-        {
-            get
-            {
-                try
-                {
-                    string filePath = (string)XlCall.Excel(XlCall.xlfGetDocument, 2, this.Name);
-                    string fullFilePath = string.Format($"{filePath}\\{Name}");
-                    return new FileInfo(fullFilePath);
-                }
-                catch { return null; }
-            }
-        }
-
-
-        #endregion properties
+        #endregion fields    
 
         #region constructors
 
@@ -47,40 +27,39 @@ namespace ExcelBase
         /// </summary>
         public Workbook()
         {
-            try
-            {
-                this._workbookName = (string)XlCall.Excel(XlCall.xlfGetWorkbook, 16);
-            }
-            catch { throw; }
+            this._workbookName = (string)XlCall.Excel(XlCall.xlfGetWorkbook, 16);
         }
 
         #endregion constructors       
 
+        #region properties
 
-        public void HideAllWorkbookWindows()
+        public string Name { get => _workbookName; }
+
+        public FileInfo FileInfo
         {
-            //get an array of all windows, remember first entry into array is always the active window
-            object[,] arrayOfWindows = (object[,])XlCall.Excel(XlCall.xlfWindows, 3, Type.Missing);
-
-            //loop through arrayOfWindows and check which workbook each belongs to, if belongs to this workbook
-            //then activate the window and hide
-            int numberOfWindows = arrayOfWindows.GetLength(1);
-
-            for (int i = 0; i < numberOfWindows; i++)
+            get
             {
-                string window_text = (string)arrayOfWindows[0, i];
-
-                string workbookOwningWindowName = WorkbookNameFromSquareBrackets
-                    ((string)XlCall.Excel(XlCall.xlfGetWindow, 1, window_text));
-
-                if (workbookOwningWindowName == this.Name)
+                try
                 {
-                    XlCall.Excel(XlCall.xlcActivate, window_text, Type.Missing);
-                    XlCall.Excel(XlCall.xlcHide);
+                    string filePath = (string)XlCall.Excel(XlCall.xlfGetDocument, 2, this.Name);
+                    string fullFilePath = string.Format($"{filePath}\\{Name}");
+                    return new FileInfo(fullFilePath);
                 }
+                catch { return null; }
             }
-
         }
+
+        public ExcelBase.Worksheet.WorksheetsCollection Worksheets { get => new ExcelBase.Worksheet.WorksheetsCollection(this.Name); }
+
+        public WindowsCollection Windows
+        {
+            get { return new WindowsCollection(this); }
+        }
+
+
+
+        #endregion properties
 
         public static string WorkbookNameFromSquareBrackets(string squareBracketFulName)
         {
@@ -90,81 +69,6 @@ namespace ExcelBase
                 squareBracketFulName = squareBracketFulName.Substring(0, index);
 
             return squareBracketFulName.Replace("[", "");
-        }
-
-
-
-        public WorksheetsCollection Worksheets { get => new WorksheetsCollection(this.Name); }
-
-        public class WorksheetsCollection : IEnumerable<Worksheet>
-        {
-            private string _workbookName;
-
-            public WorksheetsCollection(string WorkbookName)
-            {
-                this._workbookName = WorkbookName;
-            }
-
-            public Worksheet this[string worksheetName]
-            {
-                get
-                {
-                    try
-                    {   //Get Workbook given 1 returns array of worksheet names in format [BookName]SheetName                     
-                        object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
-                        long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
-                        for (int i = 0; i < numberSheets; i++)
-                        {
-                            //get just the sheet name
-                            string sheetName = Worksheet.WorksheetNameFromFullReference((string)ArrayFullWorksheetNames[0, i]);
-                            //compare to what we provided
-                            if (String.Equals(worksheetName, sheetName, StringComparison.OrdinalIgnoreCase))
-                            {
-                                try
-                                {
-                                    //construct a new worksheet type from the full worksheet name
-                                    return new Worksheet((string)ArrayFullWorksheetNames[0, i]);
-                                }
-                                catch
-                                {
-                                    return null;
-                                }
-                            }
-                        }
-
-                        return null;
-
-                    }
-                    catch { return null; }
-                    //this will loop through workbook worksheets. 
-
-                }
-            }
-
-            public IEnumerator<Worksheet> GetEnumerator()
-            {
-                object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
-                long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
-                for (int i = 0; i < numberSheets; i++)
-                {
-                    //always need to try constructing a worksheet, just in case it can't work (chart sheet for excample)
-                    Worksheet WorksheetToReturn;
-                    try
-                    {
-                        WorksheetToReturn = new Worksheet((string)ArrayFullWorksheetNames[0, i]);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                    yield return WorksheetToReturn;
-
-                }
-            }
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
         }
     }
 
@@ -220,6 +124,13 @@ namespace ExcelBase
             }
             catch { throw; }
 
+        }
+
+        public Workbook Open(System.IO.FileInfo fileInfo, ExcelEnums.XlUpdateLinks update_links = ExcelEnums.XlUpdateLinks.Never,
+           bool read_only = false, string password = null)
+        {
+            //no need to see if workbook already open as when calling xlcOpen automatically makes the workbook active if already open.
+            return this.Open(fileInfo.FullName, update_links, read_only, password);
         }
 
         /// <summary>

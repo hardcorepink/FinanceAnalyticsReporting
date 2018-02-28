@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="ExcelApplication.cs" />
     <Compile Include="ExcelEnums.cs" />
-    <Compile Include="ExcelReferenceEx.cs" />
+    <Compile Include="Range.cs" />
     <Compile Include="Window.cs" />
     <Compile Include="Workbook.cs" />
     <Compile Include="NamedRange.cs" />

@@ -264,15 +264,7 @@ namespace FinanceAnalyticsReporting
             System.Windows.MessageBox.Show(output);
         }
 
-        [ExcelCommand(MenuName = "Report Settings", MenuText = "Hide all windows of Book4")]
-        public static void HideAllWindowsBookOne()
-        {
-            Workbook BookOne = ExcelApplication.Workbooks["Book4"];
-
-            if(BookOne != null) { BookOne.HideAllWorkbookWindows(); }
-
-            
-        }
+        
 
         [ExcelCommand(MenuName = "Big Data", MenuText = "Write Big Data To Excel")]
         unsafe public static void NewBinaryName()
@@ -297,6 +289,21 @@ namespace FinanceAnalyticsReporting
 
 
         }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "Get List of Names")]
+        unsafe public static void GetListofNames()
+        {
+
+            //get values of cell a1 in active sheet
+            
+            //no marshal of paramaters required
+            Object listOfNames = XlCall.Excel(XlCall.xlfNames);
+
+
+
+            
+        }
+
 
     }
 }

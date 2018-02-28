@@ -9,59 +9,37 @@ using ExcelDna.Integration;
 namespace ExcelBase
 {
     public class Worksheet
-
     {
+
+        #region fields
+
+        private System.IntPtr _workSheetPtr;
+        private ExcelDna.Integration.ExcelReference _baseExcelReference;
+        private RangeClass _range;
+
+        #endregion fields
 
         #region Constructors
 
         /// <summary>
         /// Constructs a Worksheet from the currently active sheet.
         /// </summary>
-        public Worksheet()
+        public Worksheet() : this(((ExcelReference)XlCall.Excel(XlCall.xlSheetId)).SheetId)
         {
-            //we only care about worksheet types here. If we get an exception then we are not pointing to a worksheet
-
-            try
-            {
-                object test = XlCall.Excel(XlCall.xlSheetId);
-                this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId);
-                this._workSheetPtr = this._baseExcelReference.SheetId;
-            }
-            catch
-            {
-                throw new Exception("Could not create worksheet. Active Sheet is not worksheet type");
-            }
-
         }
 
         /// <summary>
         /// Constructs a Worksheet from a full worksheet reference. For example [Book1]SheetName
         /// </summary>
-        public Worksheet(string FullWorksheetReference)
+        public Worksheet(string FullWorksheetReference) : this(((ExcelReference)XlCall.Excel(XlCall.xlSheetId, FullWorksheetReference)).SheetId)
         {
-            try
-            {
-                this._baseExcelReference = (ExcelReference)XlCall.Excel(XlCall.xlSheetId, FullWorksheetReference);
-                this._workSheetPtr = this._baseExcelReference.SheetId;
-            }
-            catch
-            {
-                throw new Exception($"Could not create workbook from full worksheet reference: {FullWorksheetReference}");
-            }
-
         }
 
         public Worksheet(IntPtr sheetID)
         {
-            try
-            {
-                this._baseExcelReference = new ExcelReference(0, 0, 0, 0, sheetID);
-                this._workSheetPtr = this._baseExcelReference.SheetId;
-            }
-            catch
-            {
-                throw new Exception($"Could not create workbook from sheet id: {sheetID.ToString()}");
-            }
+            this._baseExcelReference = new ExcelReference(0, 0, 0, 0, sheetID);
+            this._workSheetPtr = this._baseExcelReference.SheetId;
+            this._range = new RangeClass(this);
         }
 
 
@@ -90,16 +68,6 @@ namespace ExcelBase
 
 
         #endregion AttributeClasses
-
-        #region fields
-
-        private System.IntPtr _workSheetPtr;
-        private ExcelDna.Integration.ExcelReference _baseExcelReference;
-
-
-
-
-        #endregion fields
 
         #region Properties
 
@@ -166,42 +134,17 @@ namespace ExcelBase
             {
                 //first get the workbook name
                 string workbookName = this.WorkbookName;
-
                 Workbook newWB = new Workbook(workbookName);
-
                 return newWB;
-                //then get the list of 
 
             }
         }
 
-        public List<NamedRange> NamesCollection 
+        public RangeClass Range
         {
-            get
-            {
-                List<NamedRange> ListNames = new List<NamedRange>();
-
-                //setup the collection here - we are just looking for sheet defined names
-                object arrayOfNames = XlCall.Excel(XlCall.xlfNames, this.ParentWorkbook.Name, 3);
-
-                if (arrayOfNames is object[,] arrayOfNamesConverted)
-                {
-                    int lengthOfArray = arrayOfNamesConverted.GetLength(1);
-                    for (int i = 0; i < lengthOfArray; i++)
-                    {
-                        try
-                        {
-                            //string tryWSName = @"'" + this.ShortWorksheetName + @"'!" + (string)arrayOfNamesConverted[0, i];
-                            //Boolean wsScoped = (Boolean)XlCall.Excel(XlCall.xlfGetName, tryWSName, 2);
-                            //if (wsScoped) ListNames.Add(new NamedRange(this, (string)arrayOfNamesConverted[0, i]));
-                        }
-                        catch { }
-                    }
-                }
-
-                return ListNames;
-            }
+            get { return this._range; }
         }
+
 
         #endregion Properties
 
@@ -315,15 +258,93 @@ namespace ExcelBase
 
         #endregion Methods
 
-        #region subClasses
+        #region classes
 
-        
+        public class WorksheetsCollection : IEnumerable<Worksheet>
+        {
+            private string _workbookName;
 
+            public WorksheetsCollection(string WorkbookName)
+            {
+                this._workbookName = WorkbookName;
+            }
 
-        #endregion subClasses
+            public Worksheet this[string worksheetName]
+            {
+                get
+                {
+                    try
+                    {   //Get Workbook given 1 returns array of worksheet names in format [BookName]SheetName                     
+                        object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
+                        long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
+                        for (int i = 0; i < numberSheets; i++)
+                        {
+                            //get just the sheet name
+                            string sheetName = Worksheet.WorksheetNameFromFullReference((string)ArrayFullWorksheetNames[0, i]);
+                            //compare to what we provided
+                            if (String.Equals(worksheetName, sheetName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                try
+                                {
+                                    //construct a new worksheet type from the full worksheet name
+                                    return new Worksheet((string)ArrayFullWorksheetNames[0, i]);
+                                }
+                                catch
+                                {
+                                    return null;
+                                }
+                            }
+                        }
 
+                        return null;
 
+                    }
+                    catch { return null; }
+                    //this will loop through workbook worksheets. 
+
+                }
+            }
+
+            public IEnumerator<Worksheet> GetEnumerator()
+            {
+                object[,] ArrayFullWorksheetNames = (object[,])(XlCall.Excel(XlCall.xlfGetWorkbook, 1, this._workbookName));
+                long numberSheets = ArrayFullWorksheetNames.GetLongLength(1);
+                for (int i = 0; i < numberSheets; i++)
+                {
+                    //always need to try constructing a worksheet, just in case it can't work (chart sheet for excample)
+                    Worksheet WorksheetToReturn;
+                    try
+                    {
+                        WorksheetToReturn = new Worksheet((string)ArrayFullWorksheetNames[0, i]);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    yield return WorksheetToReturn;
+
+                }
+            }
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return this.GetEnumerator();
+            }
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (Worksheet ws in this)
+                {
+                    sb.Append(ws.FullWorksheetName);
+                    sb.Append(Environment.NewLine);
+                }
+
+                return sb.ToString();
+
+            }
+        }
+
+        #endregion classes
     }
-
 }
 

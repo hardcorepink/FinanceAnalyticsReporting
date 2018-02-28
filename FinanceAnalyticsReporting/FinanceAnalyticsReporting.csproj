@@ -95,6 +95,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>CALL C:\Users\lukej\Desktop\FinancialAnalytics\FinanceAnalyticsReporting\FinanceAnalyticsReporting\FinanceAnalyticsReporting\bin\Debug\Pack.bat</PostBuildEvent>
+    <PostBuildEvent>CALL C:\Users\Luke\Source\Repos\FinanceAnalyticsReporting\FinanceAnalyticsReporting\bin\Debug\Pack.bat
+</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,21 +62,28 @@ namespace ExcelBase
         #region properties
 
         #endregion properties
-
-
-
-
-
+                
         #region methods
 
        
-
-
-
         #endregion methods
 
 
 
 
+    }
+
+
+    public class NamedRangeCollection : IEnumerable<NamedRange>
+    {
+        public IEnumerator<NamedRange> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
     }
 }

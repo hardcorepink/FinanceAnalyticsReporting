@@ -108,7 +108,7 @@ namespace ExcelBase
 
                 this.listClassSettings = this.listAllSettings.Where(s =>
                     string.Equals(s.SettingType.ToString(), "classSetting", StringComparison.OrdinalIgnoreCase)).ToList();
-                                
+
                 this.listCalculatedSettings = this.listAllSettings.Where(s =>
                     string.Equals(s.SettingType.ToString(), "calcualtedSetting", StringComparison.OrdinalIgnoreCase)).ToList();
 

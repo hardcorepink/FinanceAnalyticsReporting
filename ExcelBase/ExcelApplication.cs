@@ -19,13 +19,7 @@ namespace ExcelBase
             //static constructor if required
         }
 
-        #endregion constructor
-        
-        #region fields
-
-        private static WorkbookCollection _workbooks = new WorkbookCollection();
-
-        #endregion fields
+        #endregion constructor              
 
         #region properties
 
@@ -37,12 +31,10 @@ namespace ExcelBase
 
         public static WorkbookCollection Workbooks
         {
-            get { return _workbooks; }
+            get { return new WorkbookCollection(); }
         }
 
-        #endregion properties
-
-        
+        #endregion properties               
 
     }
 

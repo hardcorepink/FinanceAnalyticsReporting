@@ -102,7 +102,7 @@ namespace ExcelBase
 
     }
 
-    public class NamedRangeSetting : NamedRange
+    public class NamedRangeSetting
     {
         NamedRangeSettings _parentListNamedRangeSettings;
         private string _settingType;                    //this is the type e.g. classSetting, genericSetting, etc.
@@ -115,7 +115,7 @@ namespace ExcelBase
         private bool _settingCanBeOverwritten;
 
         private string _settingFullName;
-         
+
 
         public string SettingType
         {
@@ -150,38 +150,38 @@ namespace ExcelBase
                 string wsName = this.ParentSettingsList.ParentSheet.FullWorksheetName;
                 return wsName + "!" + this._settingName;
             }
-                        
+
         }
 
         public string SettingRefText
         {
             get
-            {                
+            {
                 return (string)XlCall.Excel(XlCall.xlfGetName, this.SettingFullName);
             }
             set
             {
-                XlCall.Excel(XlCall.xlfSetName,this.SettingFullName, value);
+                XlCall.Excel(XlCall.xlfSetName, this.SettingFullName, value);
             }
         }
 
-        
+
         public string SettingSecondaryValue
         {
-            get => _settingSecondaryValue; 
-            set => _settingSecondaryValue = value; 
+            get => _settingSecondaryValue;
+            set => _settingSecondaryValue = value;
         }
 
         public string SettingGUISerializationString
         {
-            get => _settingGUISerializationString; 
-            set => _settingGUISerializationString = value; 
+            get => _settingGUISerializationString;
+            set => _settingGUISerializationString = value;
         }
 
         public NamedRangeSettings ParentSettingsList
         {
-            get => this._parentListNamedRangeSettings; 
-            set => this._parentListNamedRangeSettings = value; 
+            get => this._parentListNamedRangeSettings;
+            set => this._parentListNamedRangeSettings = value;
         }
 
     }
