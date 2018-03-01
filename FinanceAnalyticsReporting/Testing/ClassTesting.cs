@@ -324,15 +324,40 @@ namespace FinanceAnalyticsReporting
         [ExcelCommand(MenuName = "Names", MenuText = "Get List of WorkbookNames")]
         public static void GetListOfWorkbookNames()
         {
-
             //get values of cell a1 in active sheet
 
             //no marshal of paramaters required
             Workbook activeWorkbook = new Workbook();
 
-
-
             System.Windows.Forms.MessageBox.Show(activeWorkbook.Names.ToString());
+
+        }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "Test Add Name")]
+        public static void DefineName()
+        {
+
+            Worksheet activeWS = new Worksheet();
+
+            string refersTo = (string)activeWS.Range["A1"].GetValue();
+
+            Workbook activeWorkbook = new Workbook();
+
+            NamedRange newName = activeWorkbook.Names.Add("testNewName", refersTo, false);
+
+        }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "AddWorksheetName")]
+        public static void DAddWorksheetName()
+        {
+
+            Worksheet activeWS = new Worksheet();
+
+            string refersTo = (string)activeWS.Range["A1"].GetValue();
+
+            //now define a new Name
+
+            NamedRange newName = activeWS.Names.Add("testWSName", refersTo, false);
 
         }
 

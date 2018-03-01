@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ExcelApplication.cs" />
     <Compile Include="ExcelEnums.cs" />
+    <Compile Include="ExcelExtra\WorksheetWithSettings.cs" />
     <Compile Include="Range.cs" />
     <Compile Include="Window.cs" />
     <Compile Include="Workbook.cs" />

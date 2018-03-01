@@ -16,7 +16,7 @@ namespace ExcelBase
         private Workbook _workbook;
 
         private string _shortName;
-        private string _fullRefName;
+        private string _fullRefName; //TODO implement tis so can use delete name
 
         #endregion fields
 
@@ -28,39 +28,34 @@ namespace ExcelBase
             //if it doesn't exist will return error
             this._worksheet = worksheet;
             this._shortName = shortName;
-
         }
 
         public NamedRange(Workbook workbook, string shortName)
         {
-
             this._workbook = workbook;
             this._shortName = shortName;
-
         }
 
         #endregion constructors
 
         #region properties
+
         public string ShortName
         {
             get { return _shortName; }
         }
+        #endregion properties
+
+        #region methods
+
+        public void Delete()
+        {
+            //TODO implement this delete method
+        }
+
+        #endregion methods
+
     }
-
-
-
-    #endregion properties
-
-    #region methods
-
-
-    #endregion methods
-
-
-
-
-
     public class NamedRangeCollection : IEnumerable<NamedRange>
     {
 
@@ -88,7 +83,7 @@ namespace ExcelBase
 
 
             try
-            {                                
+            {
                 arrayOfNames = (object[,])XlCall.Excel(XlCall.xlfNames, documentName);
             }
             catch
@@ -120,7 +115,7 @@ namespace ExcelBase
                     if (trueIfworksheetScoped) { yield return new NamedRange(this._worksheet, (string)arrayOfNames[0, i]); }
 
                     //we have an array of worksheet scoped names - as we passed the sheet name
-                   
+
                 }
                 else
                 {
@@ -157,5 +152,32 @@ namespace ExcelBase
             return sb.ToString();
 
         }
+
+        public NamedRange Add(string nameText, string refersTo, bool hidden = true)
+        {
+            try
+            {
+                //TODO need to activate the workbook passed here, as defineName assumes active workbook
+                bool local = false;
+
+                if (_worksheet == null) { local = false; }
+                else { local = true; }
+
+                XlCall.Excel(XlCall.xlcDefineName, nameText, refersTo, Type.Missing, Type.Missing, hidden, Type.Missing, local);
+
+                if (_worksheet == null) { return new NamedRange(this._workbook, nameText); } //workbook scoped
+                else { return new NamedRange(this._worksheet, nameText); }
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        //TODO - add named range delete - potentially in the NamedRange class?
+        //TODO - add named range indexer for worksheet and workbook
+
+
     }
 }
