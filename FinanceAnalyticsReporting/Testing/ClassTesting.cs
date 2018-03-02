@@ -33,7 +33,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-       
+
 
         [ExcelCommand(MenuName = "Hello", MenuText = "Create new worksheet from active sheet")]
         public static void CreateNewWorksheetObject()
@@ -69,7 +69,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-        
+
 
         [ExcelCommand(MenuName = "Hello", MenuText = "TestFullWorksheetConstrcutor")]
         public static void TestFullWorksheetConstrcutor()
@@ -80,7 +80,7 @@ namespace FinanceAnalyticsReporting
 
         }
 
-       
+
 
         [ExcelCommand(MenuName = "Hello", MenuText = "Evalate formula under selection")]
         public static void EvaluateFormulaInSelection()
@@ -137,17 +137,17 @@ namespace FinanceAnalyticsReporting
 
             object result = XlCall.Excel(XlCall.xlfEvaluate, @"'Sheet1'!Test");
 
-           
-                string newResult1String = result1.ToString().Substring(1);
-               
-                object anotherResult = (XlCall.Excel(XlCall.xlfTextref, newResult1String, false)).ToString();
 
-                result3 = XlCall.Excel(XlCall.xlfEvaluate, newResult1String);
+            string newResult1String = result1.ToString().Substring(1);
+
+            object anotherResult = (XlCall.Excel(XlCall.xlfTextref, newResult1String, false)).ToString();
+
+            result3 = XlCall.Excel(XlCall.xlfEvaluate, newResult1String);
 
 
-                result3 = XlCall.Excel(XlCall.xlfEvaluate, result);
-                result8 = ((ExcelReference)result3).GetValue();
-           
+            result3 = XlCall.Excel(XlCall.xlfEvaluate, result);
+            result8 = ((ExcelReference)result3).GetValue();
+
 
             string outResult = $"Straight Get Name Result: {result1.ToString()} {Environment.NewLine}" +
                 $"Type {result1.GetType().Name} {Environment.NewLine} {Environment.NewLine}" +
@@ -160,7 +160,7 @@ namespace FinanceAnalyticsReporting
 
 
         }
-                       
+
 
         [ExcelCommand(MenuName = "Report Settings", MenuText = "putInLongStringFromA1")]
         public static void PutInLongStringFromA1()
@@ -226,20 +226,20 @@ namespace FinanceAnalyticsReporting
             string val = (string)excelRef.GetValue();
             System.IO.FileInfo newFI = new System.IO.FileInfo(val);
             Workbook newWB = ExcelApplication.Workbooks[newFI];
-            
-                try
-                {
-                    newWB = ExcelApplication.Workbooks.Open(val);
-                    System.Windows.MessageBox.Show($"New workbook = {newWB.Name}");
-                }
-                catch(Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"Could not open : {ex.Message}");
-                }
-            
+
+            try
+            {
+                newWB = ExcelApplication.Workbooks.Open(val);
+                System.Windows.MessageBox.Show($"New workbook = {newWB.Name}");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not open : {ex.Message}");
+            }
 
 
-            
+
+
 
         }
 
@@ -254,9 +254,9 @@ namespace FinanceAnalyticsReporting
         [ExcelCommand(MenuName = "Report Settings", MenuText = "loopThroughWorkbooks")]
         public static void TestWokbooksLooper()
         {
-            string output= "";
+            string output = "";
 
-            foreach(Workbook wb in ExcelApplication.Workbooks)
+            foreach (Workbook wb in ExcelApplication.Workbooks)
             {
                 output = output + wb.Name + Environment.NewLine;
             }
@@ -264,7 +264,7 @@ namespace FinanceAnalyticsReporting
             System.Windows.MessageBox.Show(output);
         }
 
-        
+
 
         [ExcelCommand(MenuName = "Big Data", MenuText = "Write Big Data To Excel")]
         unsafe public static void NewBinaryName()
@@ -295,13 +295,13 @@ namespace FinanceAnalyticsReporting
         {
 
             //get values of cell a1 in active sheet
-            
+
             //no marshal of paramaters required
-            
+
 
             Worksheet activeSheet = new Worksheet();
             string valueOfFirstCell = (string)activeSheet.Range["A1"].GetValue();
-            
+
             Object listOfNames = XlCall.Excel(XlCall.xlfNames, valueOfFirstCell);
 
         }
@@ -359,6 +359,27 @@ namespace FinanceAnalyticsReporting
 
             NamedRange newName = activeWS.Names.Add("testWSName", refersTo, false);
 
+        }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "DeleteWorksheetNameInA1")]
+        public static void DeleteWorksheetNameCalledTesting()
+        {
+
+            Worksheet activeWS = new Worksheet();
+            NamedRange nr = activeWS.Names["testing"];
+            nr.Delete();
+
+        }
+
+        [ExcelCommand(MenuName = "Names", MenuText = "DeleteWorkbookNameInA1")]
+        public static void DeleteWorkbookNameCalledTesting()
+        {
+            try
+            {
+                string NameToDelete = (string)(new Worksheet()).Range["A1"].GetValue();
+                XlCall.Excel(XlCall.xlcDeleteName, NameToDelete);
+            }
+            catch { }
         }
 
 

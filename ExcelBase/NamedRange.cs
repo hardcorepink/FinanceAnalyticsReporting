@@ -14,9 +14,7 @@ namespace ExcelBase
 
         private Worksheet _worksheet;
         private Workbook _workbook;
-
         private string _shortName;
-        private string _fullRefName; //TODO implement tis so can use delete name
 
         #endregion fields
 
@@ -50,7 +48,42 @@ namespace ExcelBase
 
         public void Delete()
         {
-            //TODO implement this delete method
+            //We cannot use fullName here as Delete.Name does not recongnise names in the format '[Book1]'!NamedRange
+            string nameDeleteFormat;
+
+            //TODO - ensure that the worksheet/workbook that this name is referring to is the active one.
+
+            if(this._workbook == null)
+            {
+                //worksheet scoped
+                nameDeleteFormat = $"'{this._worksheet.ShortWorksheetName}'!{this.ShortName}";
+            }
+            else
+            {
+                //workbook scoped name
+                nameDeleteFormat = this.ShortName;
+
+                //todo need to test if there is a 'competing' worksheet name in here. If so add sheet, delete name then delete new sheet
+            }
+
+            XlCall.Excel(XlCall.xlcDeleteName, nameDeleteFormat);
+        }
+
+        public string FullName
+        {
+            get
+            {
+                if (_workbook == null)
+                {
+                    //worksheet scoped but full name will still include the workbook '[Workbook.xlsx]Work Sheet'!WorksheetScopedNamedRange
+                    return $"'[{this._worksheet.ParentWorkbook.Name}]{this._worksheet.ShortWorksheetName}'!{this.ShortName}";
+                }
+                else
+                {
+                    //workbook scoped in format ='Workbook.xlsx'!WorkbookScopedNamedRange
+                    return $"'{this._workbook.Name}'!{this.ShortName}";
+                }
+            }
         }
 
         #endregion methods
@@ -61,6 +94,22 @@ namespace ExcelBase
 
         private Worksheet _worksheet;
         private Workbook _workbook;
+
+
+        public NamedRange this[string shortName]
+        {
+            //remember Names function only returns a short name, so this must be passed a short name
+            get
+            {
+                foreach (NamedRange nr in this)
+                {
+                    if (nr.ShortName == shortName) return nr;
+                }
+                return null;
+            }
+        }
+
+
 
         public NamedRangeCollection(Workbook workbookOfNames)
         {
@@ -175,7 +224,7 @@ namespace ExcelBase
             }
         }
 
-        //TODO - add named range delete - potentially in the NamedRange class?
+
         //TODO - add named range indexer for worksheet and workbook
 
 
